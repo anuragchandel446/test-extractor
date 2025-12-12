@@ -1,0 +1,1091 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Moon Stoners TTS Reader</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Custom Cosmic Theme -->
+  <link rel="stylesheet" href="kc.css" />
+  <style>
+    /* Login page specific styles */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .login-card {
+      max-width: 480px;
+      width: 100%;
+      background: rgba(26, 29, 58, 0.025) !important;
+      backdrop-filter: blur(28px);
+      border: 1px solid rgba(0, 212, 255, 0.1) !important;
+      border-radius: 24px !important;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.02),
+        0 2px 8px rgba(0, 212, 255, 0.08) !important;
+      overflow: hidden;
+    }
+    
+    .login-header {
+      background: linear-gradient(135deg, 
+        rgba(0, 212, 255, 0.08) 0%, 
+        rgba(157, 78, 221, 0.08) 100%);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      border-radius: 20px;
+      padding: 4px;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(157, 78, 221, 0.1));
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-logo img {
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      object-fit: contain;
+    }
+    
+    .login-title {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--cosmic-cyan), var(--nebula-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+      margin-bottom: 0.5rem;
+    }
+    
+    .login-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    
+    .login-form {
+      padding: 2rem;
+    }
+    
+    .floating-label {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    
+    .floating-label input {
+      background: rgba(10, 10, 15, 0.3) !important;
+      border: 1px solid rgba(0, 212, 255, 0.2) !important;
+      border-radius: 12px !important;
+      padding: 1rem 1rem 1rem 3rem !important;
+      color: var(--text-primary) !important;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .floating-label input:focus {
+      background: rgba(10, 10, 15, 0.4) !important;
+      border-color: var(--cosmic-cyan) !important;
+      box-shadow: 0 0 0 0.2rem rgba(0, 212, 255, 0.25), 
+                  0 0 20px rgba(0, 212, 255, 0.3),
+                  inset 0 0 20px rgba(157, 78, 221, 0.1) !important;
+      transform: translateY(-2px);
+    }
+    
+    /* Colorful input glow effect */
+    .floating-label input {
+      position: relative;
+    }
+    
+    .floating-label::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cosmic-cyan), var(--aurora-pink), var(--neon-green));
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+    
+    .floating-label:focus-within::after {
+      width: 100%;
+    }
+    
+    .floating-label .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      z-index: 10;
+    }
+    
+    .login-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .btn-login {
+      background: linear-gradient(135deg, var(--cosmic-cyan), var(--nebula-purple), var(--aurora-pink)) !important;
+      border: none !important;
+      border-radius: 12px !important;
+      padding: 0.875rem 2rem !important;
+      font-weight: 600 !important;
+      font-size: 1rem !important;
+      color: white !important;
+      box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4), 0 0 20px rgba(255, 61, 113, 0.2) !important;
+      transition: all 0.3s ease !important;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-login::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn-login:hover::before {
+      left: 100%;
+    }
+    
+    .btn-login:hover {
+      background: linear-gradient(135deg, var(--neon-green), var(--galaxy-gold), var(--electric-blue)) !important;
+      transform: translateY(-3px) scale(1.05) !important;
+      box-shadow: 0 8px 30px rgba(0, 255, 136, 0.5), 0 0 40px rgba(255, 215, 0, 0.3) !important;
+    }
+    
+    .btn-skip {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      border-radius: 12px !important;
+      padding: 0.875rem 2rem !important;
+      color: var(--text-primary) !important;
+      font-weight: 500 !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    .btn-skip:hover {
+      background: rgba(0, 212, 255, 0.1) !important;
+      border-color: var(--cosmic-cyan) !important;
+      color: var(--text-primary) !important;
+      transform: translateY(-2px) !important;
+    }
+    
+    .login-message {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: rgba(0, 212, 255, 0.05);
+      border: 1px solid rgba(0, 212, 255, 0.1);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    
+    .login-footer {
+      text-align: center;
+      padding: 1rem 2rem 2rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      border-top: 1px solid rgba(0, 212, 255, 0.1);
+    }
+    
+    /* Animated particles for login page */
+    .login-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--cosmic-cyan);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .particle:nth-child(2n) {
+      background: var(--nebula-purple);
+      animation-delay: -2s;
+      animation-duration: 8s;
+    }
+    
+    .particle:nth-child(3n) {
+      background: var(--nebula-pink);
+      animation-delay: -4s;
+      animation-duration: 10s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+      50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+    }
+    
+    /* Enhanced login page cosmic orbs */
+    .login-cosmic-orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      animation: loginFloat 15s ease-in-out infinite;
+      box-shadow: 0 0 30px currentColor;
+    }
+    
+    .login-orb-1 {
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, 
+        rgba(0,212,255,0.4), 
+        rgba(157,78,221,0.3), 
+        rgba(0,255,136,0.2), 
+        transparent);
+      top: 8%;
+      left: 8%;
+      animation-delay: 0s;
+    }
+    
+    .login-orb-2 {
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, 
+        rgba(255,61,113,0.5), 
+        rgba(255,215,0,0.3), 
+        rgba(255,107,53,0.2), 
+        transparent);
+      top: 15%;
+      right: 12%;
+      animation-delay: -3s;
+    }
+    
+    .login-orb-3 {
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, 
+        rgba(0,255,136,0.4), 
+        rgba(0,102,255,0.3), 
+        rgba(0,212,255,0.2), 
+        transparent);
+      bottom: 20%;
+      left: 15%;
+      animation-delay: -6s;
+    }
+    
+    .login-orb-4 {
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, 
+        rgba(157,78,221,0.3), 
+        rgba(255,107,53,0.2), 
+        rgba(255,215,0,0.1), 
+        transparent);
+      bottom: 10%;
+      right: 8%;
+      animation-delay: -9s;
+    }
+    
+    .login-orb-5 {
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle, 
+        rgba(255,215,0,0.6), 
+        rgba(255,61,113,0.4), 
+        transparent);
+      top: 50%;
+      left: 5%;
+      animation-delay: -12s;
+    }
+    
+    .login-orb-6 {
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle, 
+        rgba(0,102,255,0.4), 
+        rgba(157,78,221,0.3), 
+        transparent);
+      top: 70%;
+      right: 25%;
+      animation-delay: -15s;
+    }
+    
+    @keyframes loginFloat {
+      0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+      25% { transform: translateY(-30px) translateX(20px) rotate(90deg); }
+      50% { transform: translateY(-60px) translateX(-10px) rotate(180deg); }
+      75% { transform: translateY(-30px) translateX(-20px) rotate(270deg); }
+    }
+    
+    /* Enhanced login card */
+    .login-card {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, 
+        var(--cosmic-cyan), 
+        var(--nebula-purple), 
+        var(--aurora-pink), 
+        var(--neon-green),
+        var(--galaxy-gold),
+        var(--cosmic-cyan));
+      background-size: 400% 400%;
+      border-radius: 26px;
+      z-index: -1;
+      animation: gradientShift 10s ease infinite;
+      opacity: 0.4;
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated particles background -->
+  <div class="login-particles">
+    <div class="particle" style="left: 10%; top: 20%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; top: 80%; animation-delay: -1s;"></div>
+    <div class="particle" style="left: 30%; top: 40%; animation-delay: -2s;"></div>
+    <div class="particle" style="left: 40%; top: 70%; animation-delay: -3s;"></div>
+    <div class="particle" style="left: 50%; top: 30%; animation-delay: -4s;"></div>
+    <div class="particle" style="left: 60%; top: 90%; animation-delay: -5s;"></div>
+    <div class="particle" style="left: 70%; top: 10%; animation-delay: -6s;"></div>
+    <div class="particle" style="left: 80%; top: 60%; animation-delay: -7s;"></div>
+    <div class="particle" style="left: 90%; top: 50%; animation-delay: -8s;"></div>
+  </div>
+
+  <div class="login-container">
+    <!-- Floating cosmic elements for login -->
+    <div class="login-cosmic-orb login-orb-1"></div>
+    <div class="login-cosmic-orb login-orb-2"></div>
+    <div class="login-cosmic-orb login-orb-3"></div>
+    <div class="login-cosmic-orb login-orb-4"></div>
+    <div class="login-cosmic-orb login-orb-5"></div>
+    <div class="login-cosmic-orb login-orb-6"></div>
+    
+    <div class="card login-card">
+      <!-- Header -->
+      <div class="login-header">
+        <div class="login-logo">
+          <img src="./assets/moon-stoners.png" alt="Moon Stoners logo" onerror="console.error('Logo failed to load:', this.src); this.style.border='2px solid red';" />
+        </div>
+        <h1 class="login-title">Moon Stoners</h1>
+        <p class="login-subtitle">TTS Reader & Translation Tool</p>
+      </div>
+
+      <!-- Auth Forms -->
+      <div class="login-form">
+        <!-- Login Form -->
+        <form id="loginForm">
+          <div class="floating-label">
+            <i class="bi bi-person input-icon"></i>
+            <input 
+              id="loginUser" 
+              type="text" 
+              class="form-control" 
+              placeholder="Enter your username"
+              autocomplete="username"
+              required
+            />
+          </div>
+          
+          <div class="floating-label">
+            <i class="bi bi-lock input-icon"></i>
+            <input 
+              id="loginPass" 
+              type="password" 
+              class="form-control" 
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <div class="login-buttons">
+            <button id="loginBtn" type="submit" class="btn btn-login">
+              <i class="bi bi-rocket-takeoff me-2"></i>
+              Launch TTS Reader
+            </button>
+            
+            <button id="skipBtn" type="button" class="btn btn-skip">
+              <i class="bi bi-arrow-right me-2"></i>
+              Continue as Guest
+            </button>
+          </div>
+        </form>
+
+        <!-- Registration Form (Hidden by default) -->
+        <form id="registerForm" style="display: none;">
+          <div class="floating-label">
+            <i class="bi bi-person input-icon"></i>
+            <input 
+              id="regUser" 
+              type="text" 
+              class="form-control" 
+              placeholder="Choose a username"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div class="floating-label">
+            <i class="bi bi-person-badge input-icon"></i>
+            <input 
+              id="regFullName" 
+              type="text" 
+              class="form-control" 
+              placeholder="Your full name (optional)"
+              autocomplete="name"
+            />
+          </div>
+
+          <div class="floating-label">
+            <i class="bi bi-envelope input-icon"></i>
+            <input 
+              id="regEmail" 
+              type="email" 
+              class="form-control" 
+              placeholder="Email address (optional)"
+              autocomplete="email"
+            />
+          </div>
+          
+          <div class="floating-label">
+            <i class="bi bi-lock input-icon"></i>
+            <input 
+              id="regPass" 
+              type="password" 
+              class="form-control" 
+              placeholder="Create a password"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+
+          <div class="floating-label">
+            <i class="bi bi-lock-fill input-icon"></i>
+            <input 
+              id="regPassConfirm" 
+              type="password" 
+              class="form-control" 
+              placeholder="Confirm your password"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+
+          <div class="login-buttons">
+            <button id="registerBtn" type="submit" class="btn btn-login">
+              <i class="bi bi-person-plus me-2"></i>
+              Create Account
+            </button>
+            
+            <button id="backToLoginBtn" type="button" class="btn btn-skip">
+              <i class="bi bi-arrow-left me-2"></i>
+              Back to Login
+            </button>
+          </div>
+        </form>
+
+        <!-- Toggle between forms -->
+        <div class="text-center mt-3">
+          <button id="showRegisterBtn" type="button" class="btn btn-link text-decoration-none" style="color: var(--cosmic-cyan);">
+            <i class="bi bi-person-plus me-1"></i>
+            Don't have an account? Create one
+          </button>
+          <button id="showLoginBtn" type="button" class="btn btn-link text-decoration-none" style="color: var(--cosmic-cyan); display: none;">
+            <i class="bi bi-box-arrow-in-right me-1"></i>
+            Already have an account? Sign in
+          </button>
+        </div>
+
+        <div id="authMsg" class="login-message">
+          <i class="bi bi-info-circle me-2"></i>
+          Demo credentials: <strong>demo/demo123</strong>, <strong>admin/admin123</strong>, or <strong>guest/guest123</strong>
+        </div>
+        
+        <!-- Simple status indicator -->
+        <div class="text-center mt-2">
+          <small class="text-muted">
+            <span id="pageStatus">Loading...</span>
+          </small>
+        </div>
+      </div>
+
+      <!-- Debug Panel (for troubleshooting) -->
+      <div class="login-footer">
+        <details class="mb-2">
+          <summary class="text-muted small" style="cursor: pointer;">
+            <i class="bi bi-bug me-1"></i>Debug Info (click to expand)
+          </summary>
+          <div class="mt-2 p-2 bg-dark rounded small">
+            <div><strong>Authentication Status:</strong></div>
+            <div id="debugAuth">Checking...</div>
+            <div class="mt-2"><strong>Quick Actions:</strong></div>
+            <button onclick="testLogin()" class="btn btn-outline-warning btn-sm me-2">Test Login</button>
+            <button onclick="clearAuth()" class="btn btn-outline-danger btn-sm me-2">Clear Auth</button>
+            <button onclick="checkAuth()" class="btn btn-outline-info btn-sm">Check Auth</button>
+          </div>
+        </details>
+        <small>
+          <i class="bi bi-shield-check me-1"></i>
+          Secure • Private • No data stored on servers
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Authentication Database -->
+  <script src="auth-db.js"></script>
+  
+  <script>
+    (function(){
+      // Login form elements
+      const loginForm = document.getElementById('loginForm');
+      const loginUser = document.getElementById('loginUser');
+      const loginPass = document.getElementById('loginPass');
+      const loginBtn = document.getElementById('loginBtn');
+      const skipBtn = document.getElementById('skipBtn');
+
+      // Registration form elements
+      const registerForm = document.getElementById('registerForm');
+      const regUser = document.getElementById('regUser');
+      const regFullName = document.getElementById('regFullName');
+      const regEmail = document.getElementById('regEmail');
+      const regPass = document.getElementById('regPass');
+      const regPassConfirm = document.getElementById('regPassConfirm');
+      const registerBtn = document.getElementById('registerBtn');
+
+      // Toggle buttons
+      const showRegisterBtn = document.getElementById('showRegisterBtn');
+      const showLoginBtn = document.getElementById('showLoginBtn');
+      const backToLoginBtn = document.getElementById('backToLoginBtn');
+
+      // Message element
+      const msg = document.getElementById('authMsg');
+
+      // Add loading state functionality
+      function setLoading(button, isLoading) {
+        if (isLoading) {
+          button.disabled = true;
+          if (button === loginBtn) {
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Launching...';
+          } else if (button === registerBtn) {
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Creating...';
+          }
+        } else {
+          button.disabled = false;
+          if (button === loginBtn) {
+            button.innerHTML = '<i class="bi bi-rocket-takeoff me-2"></i>Launch TTS Reader';
+          } else if (button === registerBtn) {
+            button.innerHTML = '<i class="bi bi-person-plus me-2"></i>Create Account';
+          }
+        }
+      }
+
+      // Form switching functions
+      function showRegisterForm() {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        showRegisterBtn.style.display = 'none';
+        showLoginBtn.style.display = 'inline-block';
+        showMessage('Create your cosmic account to get started! 🌟', 'info');
+        setTimeout(() => regUser.focus(), 100);
+      }
+
+      function showLoginForm() {
+        registerForm.style.display = 'none';
+        loginForm.style.display = 'block';
+        showLoginBtn.style.display = 'none';
+        showRegisterBtn.style.display = 'inline-block';
+        showMessage('Demo credentials: <strong>demo/demo123</strong> or <strong>admin/admin123</strong>', 'info');
+        setTimeout(() => loginUser.focus(), 100);
+      }
+
+      // Enhanced form validation
+      function validateLoginForm() {
+        const username = (loginUser.value || '').trim();
+        const password = (loginPass.value || '').trim();
+        
+        if (!username) {
+          showMessage('Please enter a username to continue.', 'warning');
+          loginUser.focus();
+          return false;
+        }
+        if (username.length < 2) {
+          showMessage('Username must be at least 2 characters long.', 'warning');
+          loginUser.focus();
+          return false;
+        }
+        if (!password) {
+          showMessage('Please enter your password.', 'warning');
+          loginPass.focus();
+          return false;
+        }
+        return true;
+      }
+
+      function validateRegisterForm() {
+        const username = (regUser.value || '').trim();
+        const password = (regPass.value || '').trim();
+        const confirmPassword = (regPassConfirm.value || '').trim();
+        const email = (regEmail.value || '').trim();
+        
+        if (!username) {
+          showMessage('Please choose a username.', 'warning');
+          regUser.focus();
+          return false;
+        }
+        if (username.length < 2) {
+          showMessage('Username must be at least 2 characters long.', 'warning');
+          regUser.focus();
+          return false;
+        }
+        if (!password) {
+          showMessage('Please create a password.', 'warning');
+          regPass.focus();
+          return false;
+        }
+        if (password.length < 4) {
+          showMessage('Password must be at least 4 characters long.', 'warning');
+          regPass.focus();
+          return false;
+        }
+        if (password !== confirmPassword) {
+          showMessage('Passwords do not match.', 'warning');
+          regPassConfirm.focus();
+          return false;
+        }
+        if (email && !email.includes('@')) {
+          showMessage('Please enter a valid email address.', 'warning');
+          regEmail.focus();
+          return false;
+        }
+        return true;
+      }
+
+      // Enhanced message display
+      function showMessage(text, type = 'info') {
+        const iconMap = {
+          info: 'bi-info-circle',
+          warning: 'bi-exclamation-triangle',
+          success: 'bi-check-circle',
+          error: 'bi-x-circle'
+        };
+        
+        const colorMap = {
+          info: 'rgba(0, 212, 255, 0.1)',
+          warning: 'rgba(255, 193, 7, 0.1)',
+          success: 'rgba(25, 135, 84, 0.1)',
+          error: 'rgba(220, 53, 69, 0.1)'
+        };
+
+        msg.innerHTML = `<i class="bi ${iconMap[type]} me-2"></i>${text}`;
+        msg.style.background = colorMap[type];
+        msg.style.borderColor = colorMap[type].replace('0.1', '0.3');
+      }
+
+      // Login form submission
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!validateLoginForm()) return;
+
+        setLoading(loginBtn, true);
+        showMessage('Authenticating...', 'info');
+
+        const username = loginUser.value.trim();
+        const password = loginPass.value.trim();
+
+        try {
+          // Check if database is available
+          if (window.authDB && window.authDB.db) {
+            // Try database login
+            const loginResult = await window.authDB.loginUser(username, password);
+            
+            if (loginResult.success) {
+              // Set auth flag and user data
+              localStorage.setItem('kc_logged_in', '1');
+              localStorage.setItem('kc_user', username);
+              localStorage.setItem('kc_user_data', JSON.stringify(loginResult.user));
+              
+              showMessage(`Welcome back, ${loginResult.user.fullName || username}! 🚀`, 'success');
+              
+              // Redirect after success
+              setTimeout(() => {
+                window.location.href = 'kc.html';
+              }, 1500);
+              return;
+            }
+          } else {
+            // Fallback: Simple credential check without database
+            console.log('Database not available, using fallback authentication');
+            
+            // Simple demo credentials
+            const validCredentials = {
+              'demo': 'demo123',
+              'admin': 'admin123',
+              'guest': 'guest123',
+              'test': 'test123'
+            };
+            
+            if (validCredentials[username] === password) {
+              // Set auth flag and user data
+              localStorage.setItem('kc_logged_in', '1');
+              localStorage.setItem('kc_user', username);
+              localStorage.setItem('kc_user_data', JSON.stringify({
+                username: username,
+                fullName: username.charAt(0).toUpperCase() + username.slice(1) + ' User',
+                preferences: {
+                  theme: 'cosmic',
+                  language: 'en',
+                  autoSpeak: false,
+                  backgroundAnimation: true
+                }
+              }));
+              
+              showMessage(`Welcome, ${username}! 🚀`, 'success');
+              
+              // Redirect after success
+              setTimeout(() => {
+                window.location.href = 'kc.html';
+              }, 1500);
+              return;
+            }
+          }
+          
+          // If we get here, login failed
+          throw new Error('Invalid username or password');
+          
+        } catch (error) {
+          console.error('Login error:', error);
+          setLoading(loginBtn, false);
+          
+          if (error.message.includes('Invalid username or password')) {
+            showMessage('Invalid credentials. Try: demo/demo123, admin/admin123, or guest/guest123', 'error');
+          } else if (error.message.includes('Database not initialized')) {
+            showMessage('Database loading... Please try again in a moment.', 'warning');
+            // Retry after database loads
+            setTimeout(() => {
+              setLoading(loginBtn, false);
+            }, 2000);
+          } else {
+            showMessage(`Login failed: ${error.message}`, 'error');
+          }
+        }
+      });
+
+      // Debug functions
+      window.testLogin = function() {
+        console.log('Test login activated');
+        localStorage.setItem('kc_logged_in', '1');
+        localStorage.setItem('kc_user', 'test-user');
+        localStorage.setItem('kc_user_data', JSON.stringify({
+          username: 'test-user',
+          fullName: 'Test User',
+          preferences: {
+            theme: 'cosmic',
+            language: 'en',
+            autoSpeak: false,
+            backgroundAnimation: true
+          }
+        }));
+        updateDebugInfo();
+        setTimeout(() => window.location.href = 'kc.html', 500);
+      };
+
+      window.clearAuth = function() {
+        localStorage.removeItem('kc_logged_in');
+        localStorage.removeItem('kc_user');
+        localStorage.removeItem('kc_user_data');
+        updateDebugInfo();
+        showMessage('Authentication data cleared.', 'info');
+      };
+
+      window.checkAuth = function() {
+        updateDebugInfo();
+        const isLoggedIn = localStorage.getItem('kc_logged_in');
+        if (isLoggedIn === '1') {
+          showMessage('You are logged in! Redirecting...', 'success');
+          setTimeout(() => window.location.href = 'kc.html', 1000);
+        } else {
+          showMessage('You are not logged in.', 'warning');
+        }
+      };
+
+      function updateDebugInfo() {
+        const debugAuth = document.getElementById('debugAuth');
+        if (debugAuth) {
+          const isLoggedIn = localStorage.getItem('kc_logged_in');
+          const user = localStorage.getItem('kc_user');
+          const userData = localStorage.getItem('kc_user_data');
+          
+          debugAuth.innerHTML = `
+            <div>kc_logged_in: <span class="text-${isLoggedIn === '1' ? 'success' : 'danger'}">${isLoggedIn || 'null'}</span></div>
+            <div>kc_user: <span class="text-info">${user || 'null'}</span></div>
+            <div>kc_user_data: <span class="text-muted">${userData ? 'present' : 'null'}</span></div>
+            <div>Database: <span class="text-${window.authDB && window.authDB.db ? 'success' : 'warning'}">${window.authDB && window.authDB.db ? 'ready' : 'loading'}</span></div>
+          `;
+        }
+      }
+
+      // Registration form submission
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!validateRegisterForm()) return;
+
+        setLoading(registerBtn, true);
+        showMessage('Creating your cosmic account...', 'info');
+
+        try {
+          const userData = {
+            username: regUser.value.trim(),
+            password: regPass.value.trim(),
+            fullName: regFullName.value.trim(),
+            email: regEmail.value.trim()
+          };
+
+          // Register user in database
+          const registerResult = await window.authDB.registerUser(userData);
+          
+          if (registerResult.success) {
+            showMessage(`Account created successfully! Welcome, ${userData.fullName || userData.username}! 🎉`, 'success');
+            
+            // Auto-login after registration
+            setTimeout(async () => {
+              try {
+                const loginResult = await window.authDB.loginUser(userData.username, userData.password);
+                localStorage.setItem('kc_logged_in', '1');
+                localStorage.setItem('kc_user', userData.username);
+                localStorage.setItem('kc_user_data', JSON.stringify(loginResult.user));
+                
+                window.location.href = 'kc.html';
+              } catch (error) {
+                console.error('Auto-login failed:', error);
+                showMessage('Account created! Please login with your new credentials.', 'success');
+                showLoginForm();
+              }
+            }, 2000);
+          }
+        } catch (error) {
+          console.error('Registration error:', error);
+          setLoading(registerBtn, false);
+          
+          if (error.message.includes('Username already exists')) {
+            showMessage('Username already taken. Please choose a different one.', 'error');
+            regUser.focus();
+          } else {
+            showMessage(`Registration failed: ${error.message}`, 'error');
+          }
+        }
+      });
+
+      // Form toggle event listeners
+      showRegisterBtn.addEventListener('click', showRegisterForm);
+      showLoginBtn.addEventListener('click', showLoginForm);
+      backToLoginBtn.addEventListener('click', showLoginForm);
+
+      // Skip login
+      skipBtn.addEventListener('click', () => {
+        console.log('Guest login clicked');
+        showMessage('Entering as guest user...', 'info');
+        
+        // Disable button to prevent double-clicks
+        skipBtn.disabled = true;
+        skipBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Loading...';
+        
+        setTimeout(() => {
+          try {
+            localStorage.setItem('kc_logged_in', '1');
+            localStorage.setItem('kc_user', 'guest');
+            localStorage.setItem('kc_user_data', JSON.stringify({
+              username: 'guest',
+              fullName: 'Guest User',
+              preferences: {
+                theme: 'cosmic',
+                language: 'en',
+                autoSpeak: false,
+                backgroundAnimation: true
+              }
+            }));
+            
+            console.log('Guest login data set, redirecting...');
+            window.location.href = 'kc.html';
+          } catch (error) {
+            console.error('Failed to set guest login data:', error);
+            showMessage('Failed to login as guest. Please try again.', 'error');
+            skipBtn.disabled = false;
+            skipBtn.innerHTML = '<i class="bi bi-arrow-right me-2"></i>Continue as Guest';
+          }
+        }, 800);
+      });
+
+      // Input focus effects
+      const allInputs = [loginUser, loginPass, regUser, regFullName, regEmail, regPass, regPassConfirm];
+      allInputs.forEach(input => {
+        input.addEventListener('focus', () => {
+          input.parentElement.style.transform = 'scale(1.02)';
+        });
+        
+        input.addEventListener('blur', () => {
+          input.parentElement.style.transform = 'scale(1)';
+        });
+      });
+
+      // Check if user is already logged in
+      function checkExistingAuth() {
+        const isLoggedIn = localStorage.getItem('kc_logged_in');
+        const currentUser = localStorage.getItem('kc_user');
+        
+        if (isLoggedIn === '1' && currentUser) {
+          console.log('User already logged in:', currentUser);
+          showMessage(`Already logged in as ${currentUser}. Redirecting...`, 'success');
+          setTimeout(() => {
+            window.location.href = 'kc.html';
+          }, 2000);
+          return true;
+        }
+        return false;
+      }
+
+      // Initialize page
+      function initializePage() {
+        console.log('Initializing login page...');
+        
+        // Check if all required elements exist
+        const requiredElements = {
+          loginForm, loginUser, loginPass, loginBtn, skipBtn,
+          registerForm, regUser, regPass, regPassConfirm, registerBtn,
+          showRegisterBtn, showLoginBtn, backToLoginBtn, msg
+        };
+        
+        const missingElements = [];
+        for (const [name, element] of Object.entries(requiredElements)) {
+          if (!element) {
+            missingElements.push(name);
+          }
+        }
+        
+        if (missingElements.length > 0) {
+          console.error('Missing elements:', missingElements);
+          showMessage(`Page initialization error: Missing elements: ${missingElements.join(', ')}`, 'error');
+          return false;
+        }
+        
+        console.log('All elements found, page initialized successfully');
+        return true;
+      }
+
+      // Initialize and check existing auth
+      if (initializePage()) {
+        if (!checkExistingAuth()) {
+          // Auto-focus username field only if not already logged in
+          setTimeout(() => {
+            if (loginUser) loginUser.focus();
+          }, 500);
+        }
+      }
+
+      // Add keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.ctrlKey) {
+          skipBtn.click();
+        }
+        if (e.key === 'Escape') {
+          if (registerForm.style.display !== 'none') {
+            showLoginForm();
+          }
+        }
+      });
+
+      // Update page status
+      function updatePageStatus(status) {
+        const pageStatusEl = document.getElementById('pageStatus');
+        if (pageStatusEl) {
+          pageStatusEl.textContent = status;
+        }
+      }
+
+      // Initialize debug info and database stats
+      updatePageStatus('Initializing...');
+      
+      setTimeout(async () => {
+        updateDebugInfo();
+        updatePageStatus('Database loading...');
+        
+        try {
+          if (window.authDB && window.authDB.db) {
+            const stats = await window.authDB.getStats();
+            console.log('Database Stats:', stats);
+            updateDebugInfo(); // Update again after DB is ready
+            updatePageStatus('Ready');
+          } else {
+            updatePageStatus('Ready (fallback mode)');
+          }
+        } catch (error) {
+          console.log('Could not load database stats:', error);
+          updatePageStatus('Ready (fallback mode)');
+        }
+      }, 1000);
+
+      // Update debug info periodically
+      setInterval(() => {
+        updateDebugInfo();
+        if (window.authDB && window.authDB.db) {
+          updatePageStatus('Ready');
+        } else {
+          updatePageStatus('Ready (fallback mode)');
+        }
+      }, 5000);
+
+    })();
+  </script>
+</body>
+</html>

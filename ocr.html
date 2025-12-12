@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>OCR Tools - Moon Stoners TTS Reader</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Cosmic Theme -->
+    <link rel="stylesheet" href="kc.css" />
+    <style>
+        .nav-breadcrumb {
+            background: rgba(10, 10, 15, 0.1);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+        
+        .nav-breadcrumb a {
+            color: var(--cosmic-cyan);
+            text-decoration: none;
+        }
+        
+        .nav-breadcrumb a:hover {
+            color: var(--aurora-pink);
+        }
+        
+        .image-upload-zone {
+            min-height: 300px;
+            border: 3px dashed rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            background: linear-gradient(135deg, 
+                rgba(157, 78, 221, 0.05), 
+                rgba(0, 212, 255, 0.05));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .image-upload-zone:hover {
+            border-color: var(--cosmic-cyan);
+            background: linear-gradient(135deg, 
+                rgba(157, 78, 221, 0.1), 
+                rgba(0, 212, 255, 0.1));
+            transform: translateY(-5px);
+        }
+        
+        .image-upload-zone.dragover {
+            border-color: var(--neon-green);
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 136, 0.1), 
+                rgba(255, 215, 0, 0.1));
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--cosmic-cyan);
+            margin-bottom: 1rem;
+        }
+        
+        .image-preview-container {
+            max-height: 400px;
+            overflow: hidden;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+        }
+        
+        .ocr-results {
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 136, 0.1), 
+                rgba(255, 215, 0, 0.1));
+            border-radius: 15px;
+            padding: 1.5rem;
+            min-height: 200px;
+        }
+        
+        .processing-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            z-index: 10;
+        }
+        
+        .processing-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--cosmic-cyan);
+            border-right: 4px solid var(--aurora-pink);
+            border-bottom: 4px solid var(--neon-green);
+            border-left: 4px solid var(--galaxy-gold);
+            border-radius: 50%;
+            animation: spinCosmic 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        .language-selector {
+            background: rgba(10, 10, 15, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quick-capture-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cosmic-cyan), var(--aurora-pink));
+            border: none;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .quick-capture-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(0, 212, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced cosmic visual elements -->
+    <div class="cosmic-orb"></div>
+    <div class="cosmic-orb"></div>
+    <div class="cosmic-orb"></div>
+    
+    <div class="container-fluid app">
+        <!-- Navigation Breadcrumb -->
+        <nav class="nav-breadcrumb">
+            <a href="dashboard.html"><i class="bi bi-house me-1"></i>Dashboard</a>
+            <span class="text-muted mx-2">/</span>
+            <span class="text-muted">OCR Tools</span>
+        </nav>
+
+        <header class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center">
+                <div class="logo me-3">
+                    <img src="./assets/moon-stoners.png" alt="Moon Stoners logo" class="img-fluid" />
+                </div>
+                <div class="brand">
+                    <h1 class="mb-1">
+                        <i class="bi bi-camera me-2" style="color: var(--aurora-pink);"></i>
+                        OCR Tools
+                    </h1>
+                    <p class="muted mb-0">Extract text from images with AI-powered OCR</p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="user-info text-end">
+                    <small class="text-muted">Welcome,</small>
+                    <div id="userGreeting" class="fw-semibold" style="color: var(--cosmic-cyan); font-size: 0.9rem;">
+                        Loading...
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-box-arrow-right me-1"></i>Logout
+                </button>
+            </div>
+        </header>
+
+        <div class="row g-4">
+            <!-- Image Upload and Preview -->
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-image me-2"></i>
+                            Image Input
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Upload Zone -->
+                        <div id="imageDropZone" class="image-upload-zone mb-3">
+                            <i class="bi bi-cloud-upload upload-icon"></i>
+                            <h4 class="text-center mb-2">Drop Image Here</h4>
+                            <p class="text-muted text-center mb-3">
+                                Or click to browse files<br>
+                                <small>Supports JPG, PNG, GIF, PDF</small>
+                            </p>
+                            <input id="imageFile" type="file" accept="image/*,.pdf" class="d-none" />
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-6 text-center">
+                                <button id="cameraCaptureBtn" class="quick-capture-btn">
+                                    <i class="bi bi-camera"></i>
+                                </button>
+                                <div class="mt-2">
+                                    <small class="text-muted">Camera</small>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <button id="ocrExtract" class="quick-capture-btn" style="background: linear-gradient(135deg, var(--neon-green), var(--galaxy-gold));">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <div class="mt-2">
+                                    <small class="text-muted">Extract Text</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div id="imagePreviewContainer" class="image-preview-container" style="display: none;">
+                            <img id="imagePreview" src="" alt="preview" class="image-preview" />
+                            <div id="processingOverlay" class="processing-overlay" style="display: none;">
+                                <div class="processing-spinner"></div>
+                                <div class="text-white text-center">
+                                    <h5>Processing Image...</h5>
+                                    <p id="ocrStatus" class="mb-0">Initializing OCR...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OCR Results and Settings -->
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-text me-2"></i>
+                            Extracted Text
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Language and Settings -->
+                        <div class="language-selector">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-6">
+                                    <label for="ocrLang" class="form-label small mb-1">OCR Language:</label>
+                                    <select id="ocrLang" class="form-select form-select-sm">
+                                        <option value="eng">English</option>
+                                        <option value="spa">Spanish</option>
+                                        <option value="fra">French</option>
+                                        <option value="deu">German</option>
+                                        <option value="ita">Italian</option>
+                                        <option value="por">Portuguese</option>
+                                        <option value="rus">Russian</option>
+                                        <option value="chi_sim">Chinese (Simplified)</option>
+                                        <option value="jpn">Japanese</option>
+                                        <option value="kor">Korean</option>
+                                        <option value="ara">Arabic</option>
+                                        <option value="hin">Hindi</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="ocrTextType" class="form-label small mb-1">Text Type:</label>
+                                    <select id="ocrTextType" class="form-select form-select-sm">
+                                        <option value="3">Automatic (Default)</option>
+                                        <option value="1">Automatic (with OSD)</option>
+                                        <option value="6">Block of Text</option>
+                                        <option value="4">Single Column</option>
+                                        <option value="11">Sparse Text</option>
+                                        <option value="7">Single Line</option>
+                                        <option value="8">Single Word</option>
+                                        <option value="10">Single Character</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input id="ocrAutoSpeak" type="checkbox" class="form-check-input" />
+                                <label class="form-check-label small" for="ocrAutoSpeak">
+                                    Auto-speak extracted text
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Results Area -->
+                        <div class="ocr-results">
+                            <div id="ocrResultsContent" class="text-muted text-center">
+                                <i class="bi bi-file-text" style="font-size: 3rem; opacity: 0.3;"></i>
+                                <p class="mt-3 mb-0">Upload an image to extract text</p>
+                                <small>Supports multiple languages and document types</small>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 mt-3">
+                            <button id="copyText" class="btn btn-outline-primary btn-sm" disabled>
+                                <i class="bi bi-clipboard me-1"></i>Copy Text
+                            </button>
+                            <button id="speakText" class="btn btn-outline-success btn-sm" disabled>
+                                <i class="bi bi-volume-up me-1"></i>Speak Text
+                            </button>
+                            <button id="translateText" class="btn btn-outline-info btn-sm" disabled>
+                                <i class="bi bi-translate me-1"></i>Translate
+                            </button>
+                            <button id="saveText" class="btn btn-outline-secondary btn-sm" disabled>
+                                <i class="bi bi-download me-1"></i>Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Navigation -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="mb-3">
+                            <i class="bi bi-lightning me-2"></i>
+                            Quick Actions
+                        </h6>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-outline-primary btn-sm" onclick="navigateTo('tts.html')">
+                                <i class="bi bi-volume-up me-1"></i>Text-to-Speech
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="navigateTo('translation.html')">
+                                <i class="bi bi-translate me-1"></i>Translation
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="navigateTo('voice-input.html')">
+                                <i class="bi bi-mic me-1"></i>Voice Input
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="navigateTo('settings.html')">
+                                <i class="bi bi-gear me-1"></i>Settings
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="navigateTo('kc.html')">
+                                <i class="bi bi-grid-3x3-gap me-1"></i>All-in-One
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced colorful accent elements -->
+        <div class="cosmic-accents">
+            <div class="accent-line accent-line-1"></div>
+            <div class="accent-line accent-line-2"></div>
+            <div class="accent-dot accent-dot-1"></div>
+            <div class="accent-dot accent-dot-2"></div>
+            <div class="cosmic-shape shape-triangle"></div>
+            <div class="cosmic-shape shape-diamond"></div>
+            <div class="sparkle sparkle-1"></div>
+            <div class="sparkle sparkle-2"></div>
+        </div>
+
+        <footer class="cosmic-footer">
+            <div class="footer-content">
+                <div class="footer-glow"></div>
+                <small>
+                    <i class="bi bi-stars me-2"></i>
+                    OCR Tools — Moon Stoners TTS Reader
+                    <i class="bi bi-stars ms-2"></i>
+                </small>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Tesseract.js (OCR) -->
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+    <!-- Authentication Database -->
+    <script src="auth-db.js"></script>
+    
+    <script>
+        // Navigation function
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Authentication check
+        const isLoggedIn = localStorage.getItem('kc_logged_in');
+        const currentUser = localStorage.getItem('kc_user');
+        
+        if(!(isLoggedIn === '1')){
+            window.location.href = 'login.html';
+        }
+
+        // Initialize user greeting
+        function initUserGreeting() {
+            const userGreeting = document.getElementById('userGreeting');
+            if (!userGreeting) return;
+
+            const userData = localStorage.getItem('kc_user_data');
+            
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    const displayName = user.fullName || user.username || currentUser;
+                    userGreeting.textContent = displayName;
+                    
+                    if (user.username === 'admin') {
+                        userGreeting.innerHTML = `${displayName} <span class="badge bg-danger ms-1" style="font-size: 0.7rem;">Admin</span>`;
+                    }
+                } catch (error) {
+                    userGreeting.textContent = currentUser || 'User';
+                }
+            } else {
+                userGreeting.textContent = currentUser || 'Guest';
+            }
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            const confirmLogout = confirm('Are you sure you want to logout?');
+            if (!confirmLogout) return;
+            
+            localStorage.removeItem('kc_logged_in');
+            localStorage.removeItem('kc_user');
+            localStorage.removeItem('kc_user_data');
+            
+            window.location.href = 'login.html';
+        });
+
+        // OCR functionality
+        let ocrWorker = null;
+        let extractedText = '';
+
+        async function ensureOcrWorker() {
+            if (ocrWorker) return ocrWorker;
+            
+            const lang = document.getElementById('ocrLang').value || 'eng';
+            ocrWorker = await Tesseract.createWorker(lang, 1, {
+                logger: m => {
+                    if (m && m.status) {
+                        const prog = Math.round((m.progress || 0) * 100);
+                        let statusText = m.status.replace(/_/g, ' ');
+                        statusText = statusText.charAt(0).toUpperCase() + statusText.slice(1);
+                        document.getElementById('ocrStatus').textContent = 
+                            `${statusText}${m.progress > 0 && m.progress < 1 ? ' ' + prog + '%' : ''}`;
+                    }
+                }
+            });
+            return ocrWorker;
+        }
+
+        async function processImageFile(file) {
+            if (!file) return;
+            
+            try {
+                // Show processing overlay
+                document.getElementById('processingOverlay').style.display = 'flex';
+                document.getElementById('ocrStatus').textContent = 'Starting OCR...';
+                
+                const worker = await ensureOcrWorker();
+                
+                // Set parameters
+                const textType = document.getElementById('ocrTextType').value;
+                if (textType) {
+                    await worker.setParameters({ tessedit_pageseg_mode: textType });
+                }
+                
+                const lang = document.getElementById('ocrLang').value || 'eng';
+                const { data: { text } } = await worker.recognize(file, { lang: lang });
+                
+                extractedText = (text || '').trim();
+                
+                if (extractedText) {
+                    document.getElementById('ocrResultsContent').innerHTML = 
+                        `<textarea class="form-control" rows="10" readonly>${extractedText}</textarea>`;
+                    
+                    // Enable action buttons
+                    document.querySelectorAll('#copyText, #speakText, #translateText, #saveText').forEach(btn => {
+                        btn.disabled = false;
+                    });
+                    
+                    // Auto-speak if enabled
+                    if (document.getElementById('ocrAutoSpeak').checked) {
+                        speakText();
+                    }
+                } else {
+                    document.getElementById('ocrResultsContent').innerHTML = 
+                        '<div class="text-warning text-center"><i class="bi bi-exclamation-triangle"></i><p class="mt-2">No text found in image</p></div>';
+                }
+                
+            } catch (error) {
+                console.error('OCR Error:', error);
+                document.getElementById('ocrResultsContent').innerHTML = 
+                    '<div class="text-danger text-center"><i class="bi bi-x-circle"></i><p class="mt-2">OCR processing failed</p></div>';
+            } finally {
+                // Hide processing overlay
+                document.getElementById('processingOverlay').style.display = 'none';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('imageDropZone').addEventListener('click', () => {
+            document.getElementById('imageFile').click();
+        });
+
+        document.getElementById('imageFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+                
+                // Process OCR
+                processImageFile(file);
+            }
+        });
+
+        // Drag and drop
+        const dropZone = document.getElementById('imageDropZone');
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+                
+                // Process OCR
+                processImageFile(file);
+            }
+        });
+
+        // Camera capture
+        document.getElementById('cameraCaptureBtn').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.capture = 'environment';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('imagePreview').src = e.target.result;
+                        document.getElementById('imagePreviewContainer').style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    // Process OCR
+                    processImageFile(file);
+                }
+            };
+            input.click();
+        });
+
+        // Extract button
+        document.getElementById('ocrExtract').addEventListener('click', () => {
+            const fileInput = document.getElementById('imageFile');
+            if (fileInput.files.length > 0) {
+                processImageFile(fileInput.files[0]);
+            } else {
+                alert('Please select an image first');
+            }
+        });
+
+        // Action buttons
+        document.getElementById('copyText').addEventListener('click', () => {
+            if (extractedText) {
+                navigator.clipboard.writeText(extractedText).then(() => {
+                    alert('Text copied to clipboard!');
+                });
+            }
+        });
+
+        document.getElementById('speakText').addEventListener('click', speakText);
+
+        function speakText() {
+            if (extractedText && 'speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(extractedText);
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        document.getElementById('translateText').addEventListener('click', () => {
+            if (extractedText) {
+                // Store text for translation page
+                localStorage.setItem('kc_text_to_translate', extractedText);
+                navigateTo('translation.html');
+            }
+        });
+
+        document.getElementById('saveText').addEventListener('click', () => {
+            if (extractedText) {
+                const blob = new Blob([extractedText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'extracted_text.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        });
+
+        // Initialize
+        setTimeout(() => {
+            initUserGreeting();
+        }, 100);
+
+        console.log('OCR page loaded successfully');
+    </script>
+</body>
+</html>

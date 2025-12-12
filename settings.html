@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Settings - Moon Stoners TTS Reader</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Cosmic Theme -->
+    <link rel="stylesheet" href="kc.css" />
+    <style>
+        .nav-breadcrumb {
+            background: rgba(10, 10, 15, 0.1);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+        
+        .nav-breadcrumb a {
+            color: var(--cosmic-cyan);
+            text-decoration: none;
+        }
+        
+        .nav-breadcrumb a:hover {
+            color: var(--aurora-pink);
+        }
+        
+        .settings-section {
+            background: linear-gradient(135deg, 
+                rgba(26, 29, 58, 0.1), 
+                rgba(157, 78, 221, 0.05));
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        .setting-item {
+            background: rgba(10, 10, 15, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+        
+        .voice-test-btn {
+            background: linear-gradient(135deg, var(--cosmic-cyan), var(--aurora-pink));
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, var(--aurora-pink), var(--nebula-pink));
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 61, 113, 0.4);
+        }
+        
+        .save-btn {
+            background: linear-gradient(135deg, var(--neon-green), var(--galaxy-gold));
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced cosmic visual elements -->
+    <div class="cosmic-orb"></div>
+    <div class="cosmic-orb"></div>
+    <div class="cosmic-orb"></div>
+    
+    <div class="container-fluid app">
+        <!-- Navigation Breadcrumb -->
+        <nav class="nav-breadcrumb">
+            <a href="dashboard.html"><i class="bi bi-house me-1"></i>Dashboard</a>
+            <span class="text-muted mx-2">/</span>
+            <span class="text-muted">Settings</span>
+        </nav>
+
+        <header class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center">
+                <div class="logo me-3">
+                    <img src="./assets/moon-stoners.png" alt="Moon Stoners logo" class="img-fluid" />
+                </div>
+                <div class="brand">
+                    <h1 class="mb-1">
+                        <i class="bi bi-gear me-2" style="color: var(--galaxy-gold);"></i>
+                        Settings
+                    </h1>
+                    <p class="muted mb-0">Customize your TTS Reader experience</p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="user-info text-end">
+                    <small class="text-muted">Welcome,</small>
+                    <div id="userGreeting" class="fw-semibold" style="color: var(--cosmic-cyan); font-size: 0.9rem;">
+                        Loading...
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-box-arrow-right me-1"></i>Logout
+                </button>
+            </div>
+        </header>
+
+        <div class="row g-4">
+            <!-- Voice Settings -->
+            <div class="col-lg-6">
+                <div class="settings-section">
+                    <h3 class="mb-4">
+                        <i class="bi bi-person-voice me-2" style="color: var(--cosmic-cyan);"></i>
+                        Voice Settings
+                    </h3>
+                    
+                    <div class="setting-item">
+                        <label for="voice" class="form-label fw-semibold">Preferred Voice:</label>
+                        <div class="d-flex gap-2">
+                            <select id="voice" class="form-select"></select>
+                            <button id="testVoice" class="voice-test-btn">
+                                <i class="bi bi-volume-up"></i> Test
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="gender" class="form-label fw-semibold">Voice Gender:</label>
+                        <select id="gender" class="form-select">
+                            <option value="any">Any</option>
+                            <option value="female">Female</option>
+                            <option value="male">Male</option>
+                        </select>
+                        <div class="form-check mt-2">
+                            <input id="requireGender" type="checkbox" class="form-check-input" />
+                            <label class="form-check-label small" for="requireGender">
+                                Require preferred gender (strict mode)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="setting-item">
+                                <label for="rate" class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Speed</span>
+                                    <span id="rateVal" class="badge bg-secondary">1.0</span>
+                                </label>
+                                <input id="rate" type="range" class="form-range" min="0.5" max="2.0" step="0.1" value="1" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="setting-item">
+                                <label for="pitch" class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Pitch</span>
+                                    <span id="pitchVal" class="badge bg-secondary">1.0</span>
+                                </label>
+                                <input id="pitch" type="range" class="form-range" min="0" max="2" step="0.1" value="1" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="setting-item">
+                                <label for="volume" class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Volume</span>
+                                    <span id="volumeVal" class="badge bg-secondary">1.0</span>
+                                </label>
+                                <input id="volume" type="range" class="form-range" min="0" max="1" step="0.05" value="1" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="segmentDelay" class="form-label fw-semibold d-flex justify-content-between">
+                            <span>Sentence Pause</span>
+                            <span><span id="segmentDelayVal" class="badge bg-secondary">200</span> ms</span>
+                        </label>
+                        <input id="segmentDelay" type="range" class="form-range" min="0" max="800" step="25" value="200" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appearance Settings -->
+            <div class="col-lg-6">
+                <div class="settings-section">
+                    <h3 class="mb-4">
+                        <i class="bi bi-palette me-2" style="color: var(--aurora-pink);"></i>
+                        Appearance
+                    </h3>
+                    
+                    <div class="setting-item">
+                        <div class="form-check form-switch">
+                            <input id="bgAnimate" type="checkbox" class="form-check-input" checked />
+                            <label class="form-check-label fw-semibold" for="bgAnimate">
+                                Animated Background
+                            </label>
+                        </div>
+                        <small class="text-muted">Enable cosmic background animations</small>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="bgSpeed" class="form-label fw-semibold d-flex justify-content-between">
+                            <span>Animation Speed</span>
+                            <span id="bgSpeedVal" class="badge bg-secondary">1.0x</span>
+                        </label>
+                        <input id="bgSpeed" type="range" class="form-range" min="0.2" max="3.0" step="0.1" value="1.0" />
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="form-check form-switch">
+                            <input id="highlight" type="checkbox" class="form-check-input" checked />
+                            <label class="form-check-label fw-semibold" for="highlight">
+                                Word Highlighting
+                            </label>
+                        </div>
+                        <small class="text-muted">Highlight words while reading</small>
+                    </div>
+
+                    <div class="setting-item">
+                        <label class="form-label fw-semibold">Theme Preset:</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-outline-primary btn-sm" onclick="applyTheme('cosmic')">
+                                <i class="bi bi-stars me-1"></i>Cosmic
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="applyTheme('neon')">
+                                <i class="bi bi-lightning me-1"></i>Neon
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="applyTheme('gold')">
+                                <i class="bi bi-sun me-1"></i>Gold
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="applyTheme('aurora')">
+                                <i class="bi bi-heart me-1"></i>Aurora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language & OCR Settings -->
+        <div class="row g-4 mt-2">
+            <div class="col-lg-6">
+                <div class="settings-section">
+                    <h3 class="mb-4">
+                        <i class="bi bi-translate me-2" style="color: var(--neon-green);"></i>
+                        Language Settings
+                    </h3>
+                    
+                    <div class="setting-item">
+                        <label for="defaultTranslateTo" class="form-label fw-semibold">Default Translation Language:</label>
+                        <select id="defaultTranslateTo" class="form-select">
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="ru">Russian</option>
+                            <option value="zh">Chinese</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="ar">Arabic</option>
+                            <option value="hi">Hindi</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="speechLang" class="form-label fw-semibold">Voice Input Language:</label>
+                        <select id="speechLang" class="form-select">
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="it">Italian</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="ru">Russian</option>
+                            <option value="zh">Chinese</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="ocrLang" class="form-label fw-semibold">OCR Language:</label>
+                        <select id="ocrLang" class="form-select">
+                            <option value="eng">English</option>
+                            <option value="spa">Spanish</option>
+                            <option value="fra">French</option>
+                            <option value="deu">German</option>
+                            <option value="ita">Italian</option>
+                            <option value="por">Portuguese</option>
+                            <option value="rus">Russian</option>
+                            <option value="chi_sim">Chinese (Simplified)</option>
+                            <option value="jpn">Japanese</option>
+                            <option value="kor">Korean</option>
+                            <option value="ara">Arabic</option>
+                            <option value="hin">Hindi</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Settings -->
+            <div class="col-lg-6">
+                <div class="settings-section">
+                    <h3 class="mb-4">
+                        <i class="bi bi-cpu me-2" style="color: var(--plasma-orange);"></i>
+                        Advanced Settings
+                    </h3>
+                    
+                    <div class="setting-item">
+                        <div class="form-check form-switch">
+                            <input id="autoSaveSettings" type="checkbox" class="form-check-input" checked />
+                            <label class="form-check-label fw-semibold" for="autoSaveSettings">
+                                Auto-save Settings
+                            </label>
+                        </div>
+                        <small class="text-muted">Automatically save changes</small>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="form-check form-switch">
+                            <input id="debugMode" type="checkbox" class="form-check-input" />
+                            <label class="form-check-label fw-semibold" for="debugMode">
+                                Debug Mode
+                            </label>
+                        </div>
+                        <small class="text-muted">Show detailed console logs</small>
+                    </div>
+
+                    <div class="setting-item">
+                        <label class="form-label fw-semibold">Data Management:</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button id="exportSettings" class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-download me-1"></i>Export Settings
+                            </button>
+                            <button id="importSettings" class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-upload me-1"></i>Import Settings
+                            </button>
+                            <input id="importFile" type="file" accept=".json" class="d-none" />
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label class="form-label fw-semibold text-danger">Danger Zone:</label>
+                        <button id="resetSettings" class="reset-btn w-100">
+                            <i class="bi bi-arrow-clockwise me-2"></i>
+                            Reset All Settings to Default
+                        </button>
+                        <small class="text-muted">This will reset all your preferences</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Actions -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <button id="saveSettings" class="save-btn me-3">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Save All Settings
+                </button>
+                <button class="btn btn-outline-secondary" onclick="navigateTo('dashboard.html')">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Back to Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Enhanced colorful accent elements -->
+        <div class="cosmic-accents">
+            <div class="accent-line accent-line-1"></div>
+            <div class="accent-line accent-line-2"></div>
+            <div class="accent-dot accent-dot-1"></div>
+            <div class="accent-dot accent-dot-2"></div>
+            <div class="cosmic-shape shape-triangle"></div>
+            <div class="cosmic-shape shape-diamond"></div>
+            <div class="sparkle sparkle-1"></div>
+            <div class="sparkle sparkle-2"></div>
+        </div>
+
+        <footer class="cosmic-footer">
+            <div class="footer-content">
+                <div class="footer-glow"></div>
+                <small>
+                    <i class="bi bi-stars me-2"></i>
+                    Settings — Moon Stoners TTS Reader
+                    <i class="bi bi-stars ms-2"></i>
+                </small>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Authentication Database -->
+    <script src="auth-db.js"></script>
+    
+    <script>
+        // Navigation function
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Authentication check
+        const isLoggedIn = localStorage.getItem('kc_logged_in');
+        const currentUser = localStorage.getItem('kc_user');
+        
+        if(!(isLoggedIn === '1')){
+            window.location.href = 'login.html';
+        }
+
+        // Initialize user greeting
+        function initUserGreeting() {
+            const userGreeting = document.getElementById('userGreeting');
+            if (!userGreeting) return;
+
+            const userData = localStorage.getItem('kc_user_data');
+            
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    const displayName = user.fullName || user.username || currentUser;
+                    userGreeting.textContent = displayName;
+                    
+                    if (user.username === 'admin') {
+                        userGreeting.innerHTML = `${displayName} <span class="badge bg-danger ms-1" style="font-size: 0.7rem;">Admin</span>`;
+                    }
+                } catch (error) {
+                    userGreeting.textContent = currentUser || 'User';
+                }
+            } else {
+                userGreeting.textContent = currentUser || 'Guest';
+            }
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            const confirmLogout = confirm('Are you sure you want to logout?');
+            if (!confirmLogout) return;
+            
+            localStorage.removeItem('kc_logged_in');
+            localStorage.removeItem('kc_user');
+            localStorage.removeItem('kc_user_data');
+            
+            window.location.href = 'login.html';
+        });
+
+        // Settings management
+        const LS = {
+            voice: 'kc_tts_voice',
+            rate: 'kc_tts_rate',
+            pitch: 'kc_tts_pitch',
+            volume: 'kc_tts_volume',
+            highlight: 'kc_tts_highlight',
+            segmentDelay: 'kc_tts_segmentDelay',
+            gender: 'kc_tts_gender',
+            requireGender: 'kc_tts_requireGender',
+            translateTo: 'kc_translate_to',
+            speechLang: 'kc_speech_lang',
+            bgAnimate: 'kc_tts_bgAnimate',
+            bgSpeed: 'kc_tts_bgSpeed',
+            ocrLang: 'kc_ocr_lang'
+        };
+
+        // Load voices
+        function loadVoices() {
+            const voices = speechSynthesis.getVoices().sort((a, b) => a.name.localeCompare(b.name));
+            const voiceSelect = document.getElementById('voice');
+            voiceSelect.innerHTML = '';
+            
+            voices.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.voiceURI || voice.name;
+                option.textContent = `${voice.name} (${voice.lang || 'unknown'})`;
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        // Load settings
+        function loadSettings() {
+            // Voice settings
+            const rate = localStorage.getItem(LS.rate) || '1';
+            const pitch = localStorage.getItem(LS.pitch) || '1';
+            const volume = localStorage.getItem(LS.volume) || '1';
+            const segmentDelay = localStorage.getItem(LS.segmentDelay) || '200';
+            const gender = localStorage.getItem(LS.gender) || 'any';
+            const requireGender = localStorage.getItem(LS.requireGender) === '1';
+            const highlight = localStorage.getItem(LS.highlight) !== '0';
+            
+            document.getElementById('rate').value = rate;
+            document.getElementById('pitch').value = pitch;
+            document.getElementById('volume').value = volume;
+            document.getElementById('segmentDelay').value = segmentDelay;
+            document.getElementById('gender').value = gender;
+            document.getElementById('requireGender').checked = requireGender;
+            document.getElementById('highlight').checked = highlight;
+            
+            // Update display values
+            document.getElementById('rateVal').textContent = rate;
+            document.getElementById('pitchVal').textContent = pitch;
+            document.getElementById('volumeVal').textContent = volume;
+            document.getElementById('segmentDelayVal').textContent = segmentDelay;
+            
+            // Appearance settings
+            const bgAnimate = localStorage.getItem(LS.bgAnimate) !== '0';
+            const bgSpeed = localStorage.getItem(LS.bgSpeed) || '1.0';
+            
+            document.getElementById('bgAnimate').checked = bgAnimate;
+            document.getElementById('bgSpeed').value = bgSpeed;
+            document.getElementById('bgSpeedVal').textContent = bgSpeed + 'x';
+            
+            // Language settings
+            const translateTo = localStorage.getItem(LS.translateTo) || 'es';
+            const speechLang = localStorage.getItem(LS.speechLang) || 'en';
+            const ocrLang = localStorage.getItem(LS.ocrLang) || 'eng';
+            
+            document.getElementById('defaultTranslateTo').value = translateTo;
+            document.getElementById('speechLang').value = speechLang;
+            document.getElementById('ocrLang').value = ocrLang;
+        }
+
+        // Save settings
+        function saveSettings() {
+            localStorage.setItem(LS.rate, document.getElementById('rate').value);
+            localStorage.setItem(LS.pitch, document.getElementById('pitch').value);
+            localStorage.setItem(LS.volume, document.getElementById('volume').value);
+            localStorage.setItem(LS.segmentDelay, document.getElementById('segmentDelay').value);
+            localStorage.setItem(LS.gender, document.getElementById('gender').value);
+            localStorage.setItem(LS.requireGender, document.getElementById('requireGender').checked ? '1' : '0');
+            localStorage.setItem(LS.highlight, document.getElementById('highlight').checked ? '1' : '0');
+            localStorage.setItem(LS.bgAnimate, document.getElementById('bgAnimate').checked ? '1' : '0');
+            localStorage.setItem(LS.bgSpeed, document.getElementById('bgSpeed').value);
+            localStorage.setItem(LS.translateTo, document.getElementById('defaultTranslateTo').value);
+            localStorage.setItem(LS.speechLang, document.getElementById('speechLang').value);
+            localStorage.setItem(LS.ocrLang, document.getElementById('ocrLang').value);
+            
+            if (document.getElementById('voice').value) {
+                localStorage.setItem(LS.voice, document.getElementById('voice').value);
+            }
+            
+            alert('Settings saved successfully!');
+        }
+
+        // Reset settings
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to default? This cannot be undone.')) {
+                Object.values(LS).forEach(key => localStorage.removeItem(key));
+                loadSettings();
+                alert('Settings reset to default values!');
+            }
+        }
+
+        // Test voice
+        function testVoice() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance('This is a test of the selected voice.');
+                const voices = speechSynthesis.getVoices();
+                const selectedVoice = voices.find(v => (v.voiceURI || v.name) === document.getElementById('voice').value);
+                
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+                
+                utterance.rate = parseFloat(document.getElementById('rate').value);
+                utterance.pitch = parseFloat(document.getElementById('pitch').value);
+                utterance.volume = parseFloat(document.getElementById('volume').value);
+                
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Apply theme
+        function applyTheme(theme) {
+            // This would apply different color schemes
+            // For now, just show a notification
+            alert(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme applied! (Feature coming soon)`);
+        }
+
+        // Export settings
+        function exportSettings() {
+            const settings = {};
+            Object.entries(LS).forEach(([key, storageKey]) => {
+                settings[key] = localStorage.getItem(storageKey);
+            });
+            
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tts_settings.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Import settings
+        function importSettings() {
+            document.getElementById('importFile').click();
+        }
+
+        // Event listeners
+        document.getElementById('rate').addEventListener('input', (e) => {
+            document.getElementById('rateVal').textContent = e.target.value;
+        });
+
+        document.getElementById('pitch').addEventListener('input', (e) => {
+            document.getElementById('pitchVal').textContent = e.target.value;
+        });
+
+        document.getElementById('volume').addEventListener('input', (e) => {
+            document.getElementById('volumeVal').textContent = e.target.value;
+        });
+
+        document.getElementById('segmentDelay').addEventListener('input', (e) => {
+            document.getElementById('segmentDelayVal').textContent = e.target.value;
+        });
+
+        document.getElementById('bgSpeed').addEventListener('input', (e) => {
+            document.getElementById('bgSpeedVal').textContent = e.target.value + 'x';
+        });
+
+        document.getElementById('testVoice').addEventListener('click', testVoice);
+        document.getElementById('saveSettings').addEventListener('click', saveSettings);
+        document.getElementById('resetSettings').addEventListener('click', resetSettings);
+        document.getElementById('exportSettings').addEventListener('click', exportSettings);
+        document.getElementById('importSettings').addEventListener('click', importSettings);
+
+        document.getElementById('importFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const settings = JSON.parse(e.target.result);
+                        Object.entries(settings).forEach(([key, value]) => {
+                            if (LS[key] && value !== null) {
+                                localStorage.setItem(LS[key], value);
+                            }
+                        });
+                        loadSettings();
+                        alert('Settings imported successfully!');
+                    } catch (error) {
+                        alert('Error importing settings: Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Auto-save if enabled
+        function autoSave() {
+            if (document.getElementById('autoSaveSettings').checked) {
+                saveSettings();
+            }
+        }
+
+        // Add auto-save listeners to all inputs
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', () => {
+                if (document.getElementById('autoSaveSettings').checked) {
+                    setTimeout(saveSettings, 500); // Debounce auto-save
+                }
+            });
+        });
+
+        // Initialize
+        setTimeout(() => {
+            initUserGreeting();
+            loadVoices();
+            loadSettings();
+        }, 100);
+
+        // Load voices when they become available
+        speechSynthesis.onvoiceschanged = loadVoices;
+
+        console.log('Settings page loaded successfully');
+    </script>
+</body>
+</html>

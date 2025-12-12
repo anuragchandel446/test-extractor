@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Test</title>
+</head>
+<body>
+    <h1>Translation Feature Test</h1>
+    <textarea id="testText" rows="5" cols="50">Hello, this is a test.</textarea>
+    <br>
+    <button id="testBtn">Test Translation</button>
+    <div id="result"></div>
+
+    <script>
+        async function testTranslation() {
+            const text = document.getElementById('testText').value;
+            const resultDiv = document.getElementById('result');
+            const targetLang = 'es'; // Spanish
+            
+            resultDiv.textContent = 'Testing MyMemory Translation API...';
+            
+            try {
+                // MyMemory API - free, no API key required, CORS enabled
+                const endpoint = 'https://api.mymemory.translated.net/get';
+                const langPair = `en|${targetLang}`;
+                const url = `${endpoint}?q=${encodeURIComponent(text)}&langpair=${langPair}`;
+                
+                console.log('Using URL:', url);
+                
+                const res = await fetch(url);
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+                }
+                
+                const data = await res.json();
+                console.log('Response:', data);
+                
+                if(data.responseStatus === 200 || data.responseData){
+                    const translated = data.responseData.translatedText || '';
+                    
+                    resultDiv.innerHTML = `
+                        <h3>✅ Success!</h3>
+                        <p><strong>Original:</strong> ${text}</p>
+                        <p><strong>Translated (${targetLang}):</strong> ${translated}</p>
+                        <p><strong>API:</strong> MyMemory Translation API (Free, No API Key)</p>
+                        <p><strong>Match Quality:</strong> ${data.responseData.match || 'N/A'}</p>
+                    `;
+                } else {
+                    throw new Error('Translation failed: ' + (data.responseDetails || 'Unknown error'));
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p style="color: red;">${err.message}</p>
+                    <p>Check console for details</p>
+                `;
+                console.error('Translation test error:', err);
+            }
+        }
+
+        document.getElementById('testBtn').addEventListener('click', testTranslation);
+    </script>
+</body>
+</html>
