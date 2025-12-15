@@ -106,45 +106,13 @@
         }
     </style>
 </head>
-<body>
-    <!-- Enhanced cosmic visual elements -->
-    <div class="cosmic-orb"></div>
-    <div class="cosmic-orb"></div>
-    <div class="cosmic-orb"></div>
+<body data-page="dashboard">
+    <!-- Navigation -->
+    <nav class="main-navigation" role="navigation" aria-label="Main navigation"></nav>
     
-    <!-- Side glow effects -->
-    <div class="side-glow side-glow-left"></div>
-    <div class="side-glow side-glow-right"></div>
-    
-    <!-- Corner accents -->
-    <div class="corner-accent corner-top-left"></div>
-    <div class="corner-accent corner-top-right"></div>
-    <div class="corner-accent corner-bottom-left"></div>
-    <div class="corner-accent corner-bottom-right"></div>
-    
-    <div class="container-fluid app">
-        <header class="d-flex align-items-center justify-content-between mb-4">
-            <div class="d-flex align-items-center">
-                <div class="logo me-3">
-                    <img src="./assets/moon-stoners.png" alt="Moon Stoners logo" class="img-fluid" />
-                </div>
-                <div class="brand">
-                    <h1 class="mb-1">Moon Stoners TTS Reader</h1>
-                    <p class="muted mb-0">Cosmic Text-to-Speech & AI Tools Dashboard</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="user-info text-end">
-                    <small class="text-muted">Welcome,</small>
-                    <div id="userGreeting" class="fw-semibold" style="color: var(--cosmic-cyan); font-size: 0.9rem;">
-                        Loading...
-                    </div>
-                </div>
-                <button id="logoutBtn" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-box-arrow-right me-1"></i>Logout
-                </button>
-            </div>
-        </header>
+    <!-- Page Content -->
+    <main class="page-content" role="main">
+        <div class="container-fluid">
 
         <!-- Welcome Section -->
         <div class="welcome-section">
@@ -298,106 +266,31 @@
             </div>
         </div>
 
-        <!-- Enhanced colorful accent elements -->
-        <div class="cosmic-accents">
-            <!-- Energy lines -->
-            <div class="accent-line accent-line-1"></div>
-            <div class="accent-line accent-line-2"></div>
-            <div class="accent-line accent-line-3"></div>
-            <div class="accent-line accent-line-4"></div>
-            
-            <!-- Pulsing dots -->
-            <div class="accent-dot accent-dot-1"></div>
-            <div class="accent-dot accent-dot-2"></div>
-            <div class="accent-dot accent-dot-3"></div>
-            <div class="accent-dot accent-dot-4"></div>
-            <div class="accent-dot accent-dot-5"></div>
-            
-            <!-- Floating shapes -->
-            <div class="cosmic-shape shape-triangle"></div>
-            <div class="cosmic-shape shape-diamond"></div>
-            <div class="cosmic-shape shape-hexagon"></div>
-            
-            <!-- Energy waves -->
-            <div class="energy-wave wave-1"></div>
-            <div class="energy-wave wave-2"></div>
-            
-            <!-- Sparkles -->
-            <div class="sparkle sparkle-1"></div>
-            <div class="sparkle sparkle-2"></div>
-            <div class="sparkle sparkle-3"></div>
-            <div class="sparkle sparkle-4"></div>
-            <div class="sparkle sparkle-5"></div>
         </div>
+    </main>
 
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <button class="btn btn-primary quick-action-btn" onclick="navigateTo('tts.html')" title="Quick TTS">
-                <i class="bi bi-volume-up"></i>
-            </button>
-            <button class="btn btn-info quick-action-btn" onclick="navigateTo('ocr.html')" title="Quick OCR">
-                <i class="bi bi-camera"></i>
-            </button>
-            <button class="btn btn-success quick-action-btn" onclick="navigateTo('voice-input.html')" title="Quick Voice">
-                <i class="bi bi-mic"></i>
-            </button>
-        </div>
-
-        <footer class="cosmic-footer">
-            <div class="footer-content">
-                <div class="footer-glow"></div>
-                <small>
-                    <i class="bi bi-stars me-2"></i>
-                    © Moon Stoners TTS Reader — Powered by Cosmic Technology
-                    <i class="bi bi-stars ms-2"></i>
-                </small>
-                <div class="footer-tech">
-                    <span class="tech-badge">Web Speech API</span>
-                    <span class="tech-badge">Bootstrap 5</span>
-                    <span class="tech-badge">Cosmic Theme</span>
-                </div>
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <small class="text-secondary">
+                © Moon Stoners TTS Reader — Professional Text-to-Speech Interface
+            </small>
+            <div class="footer-tech">
+                <span class="tech-badge">Web Speech API</span>
+                <span class="tech-badge">Bootstrap 5</span>
+                <span class="tech-badge">Modern Design</span>
             </div>
-        </footer>
-    </div>
+        </div>
+    </footer>
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Authentication Database -->
     <script src="auth-db.js"></script>
+    <!-- Shared Navigation -->
+    <script src="shared-navigation.js"></script>
     
     <script>
-        // Authentication check
-        const isLoggedIn = localStorage.getItem('kc_logged_in');
-        const currentUser = localStorage.getItem('kc_user');
-        
-        if(!(isLoggedIn === '1')){
-            window.location.href = 'login.html';
-        }
-
-        // Initialize user greeting
-        function initUserGreeting() {
-            const userGreeting = document.getElementById('userGreeting');
-            if (!userGreeting) return;
-
-            const userData = localStorage.getItem('kc_user_data');
-            
-            if (userData) {
-                try {
-                    const user = JSON.parse(userData);
-                    const displayName = user.fullName || user.username || currentUser;
-                    userGreeting.textContent = displayName;
-                    
-                    if (user.username === 'admin') {
-                        userGreeting.innerHTML = `${displayName} <span class="badge bg-danger ms-1" style="font-size: 0.7rem;">Admin</span>`;
-                    }
-                } catch (error) {
-                    userGreeting.textContent = currentUser || 'User';
-                }
-            } else {
-                userGreeting.textContent = currentUser || 'Guest';
-            }
-        }
-
         // Navigation function
         function navigateTo(page) {
             // Track usage
@@ -423,36 +316,19 @@
             document.getElementById('toolsUsed').textContent = usage;
         }
 
-        // Logout functionality
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            
-            const confirmLogout = confirm('Are you sure you want to logout?');
-            if (!confirmLogout) return;
-            
-            // Clear authentication data
-            localStorage.removeItem('kc_logged_in');
-            localStorage.removeItem('kc_user');
-            localStorage.removeItem('kc_user_data');
-            
-            // Redirect to login
-            window.location.href = 'login.html';
-        });
-
-        // Initialize
-        setTimeout(() => {
-            initUserGreeting();
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
             updateUsageStats();
-        }, 100);
-
-        // Add some interactive effects
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.borderColor = 'rgba(0, 212, 255, 0.5)';
-            });
             
-            card.addEventListener('mouseleave', () => {
-                card.style.borderColor = 'rgba(0, 212, 255, 0.2)';
+            // Add interactive effects to feature cards
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.borderColor = 'rgba(229, 231, 235, 1)';
+                });
             });
         });
     </script>

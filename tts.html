@@ -80,44 +80,31 @@
         }
     </style>
 </head>
-<body>
+<body data-page="tts">
     <!-- Enhanced cosmic visual elements -->
     <div class="cosmic-orb"></div>
     <div class="cosmic-orb"></div>
     <div class="cosmic-orb"></div>
     
-    <div class="container-fluid app">
-        <!-- Navigation Breadcrumb -->
-        <nav class="nav-breadcrumb">
-            <a href="dashboard.html"><i class="bi bi-house me-1"></i>Dashboard</a>
-            <span class="text-muted mx-2">/</span>
-            <span class="text-muted">Text-to-Speech</span>
-        </nav>
+    <!-- Navigation -->
+    <nav class="main-navigation" role="navigation" aria-label="Main navigation"></nav>
+    
+    <!-- Page Content -->
+    <main class="page-content" role="main">
+        <div class="container-fluid">
+            <!-- Navigation Breadcrumb -->
+            <nav class="nav-breadcrumb">
+                <a href="dashboard.html"><i class="bi bi-house me-1"></i>Dashboard</a>
+                <span class="text-muted mx-2">/</span>
+                <span class="text-muted">Text-to-Speech</span>
+            </nav>
 
-        <header class="d-flex align-items-center justify-content-between mb-4">
-            <div class="d-flex align-items-center">
-                <div class="logo me-3">
-                    <img src="./assets/moon-stoners.png" alt="Moon Stoners logo" class="img-fluid" />
-                </div>
-                <div class="brand">
-                    <h1 class="mb-1">
-                        <i class="bi bi-volume-up me-2" style="color: var(--neon-green);"></i>
-                        Text-to-Speech
-                    </h1>
-                    <p class="muted mb-0">Convert text to natural-sounding speech</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="user-info text-end">
-                    <small class="text-muted">Welcome,</small>
-                    <div id="userGreeting" class="fw-semibold" style="color: var(--cosmic-cyan); font-size: 0.9rem;">
-                        Loading...
-                    </div>
-                </div>
-                <button id="logoutBtn" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-box-arrow-right me-1"></i>Logout
-                </button>
-            </div>
+        <header class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-volume-up"></i>
+                Text-to-Speech
+            </h1>
+            <p class="page-subtitle">Convert text to natural-sounding speech</p>
         </header>
 
         <div class="row g-4">
@@ -339,12 +326,17 @@
                 </small>
             </div>
         </footer>
-    </div>
+        </div>
+    </main>
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Authentication Database -->
     <script src="auth-db.js"></script>
+    <!-- Shared Navigation -->
+    <script src="shared-navigation.js"></script>
+    <!-- Voice Quality Enhancement System -->
+    <script src="voice-quality-enhancer.js"></script>
     
     <script>
         // Navigation function
@@ -364,69 +356,437 @@
             window.location.href = 'login.html';
         }
 
-        // Initialize user greeting
-        function initUserGreeting() {
-            const userGreeting = document.getElementById('userGreeting');
-            if (!userGreeting) return;
 
-            const userData = localStorage.getItem('kc_user_data');
-            
-            if (userData) {
-                try {
-                    const user = JSON.parse(userData);
-                    const displayName = user.fullName || user.username || currentUser;
-                    userGreeting.textContent = displayName;
-                    
-                    if (user.username === 'admin') {
-                        userGreeting.innerHTML = `${displayName} <span class="badge bg-danger ms-1" style="font-size: 0.7rem;">Admin</span>`;
-                    }
-                } catch (error) {
-                    userGreeting.textContent = currentUser || 'User';
-                }
-            } else {
-                userGreeting.textContent = currentUser || 'Guest';
+
+        // Enhanced TTS Implementation with Quality Improvements
+        let currentUtterance = null;
+        let isPlaying = false;
+        let isPaused = false;
+        let voices = [];
+        let currentWordIndex = 0;
+        let words = [];
+        let enhancedTTS = null;
+
+        // Enhanced voice loading with quality analysis
+        async function loadVoices() {
+            if (!enhancedTTS) {
+                enhancedTTS = new EnhancedTTSManager();
+                await enhancedTTS.initialize();
             }
+
+            const qualityInfo = enhancedTTS.getVoiceQualityInfo();
+            voices = qualityInfo.availableVoices;
+            
+            const voiceSelect = document.getElementById('voice');
+            voiceSelect.innerHTML = '';
+            
+            voices.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.voiceURI;
+                
+                // Add quality indicator to voice name
+                const qualityIcon = voice.qualityScore >= 80 ? '⭐' : 
+                                  voice.qualityScore >= 60 ? '✓' : '';
+                const genderIcon = voice.characteristics.gender === 'female' ? '♀' : 
+                                 voice.characteristics.gender === 'male' ? '♂' : '';
+                
+                option.textContent = `${qualityIcon} ${voice.name} ${genderIcon} (${voice.lang || 'unknown'}) - Quality: ${voice.qualityScore}%`;
+                
+                // Mark recommended voices
+                if (voice.isRecommended) {
+                    option.style.fontWeight = 'bold';
+                    option.style.color = '#28a745';
+                }
+                
+                voiceSelect.appendChild(option);
+            });
+            
+            // Auto-select best voice or load saved voice
+            const savedVoice = localStorage.getItem('kc_tts_voice');
+            if (savedVoice) {
+                voiceSelect.value = savedVoice;
+            } else if (voices.length > 0) {
+                // Select the highest quality voice by default
+                voiceSelect.value = voices[0].voiceURI;
+                localStorage.setItem('kc_tts_voice', voices[0].voiceURI);
+            }
+
+            // Update voice warnings and recommendations
+            updateVoiceRecommendations();
         }
 
-        // Logout functionality
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
+        // Load settings
+        function loadSettings() {
+            document.getElementById('rate').value = localStorage.getItem('kc_tts_rate') || '1';
+            document.getElementById('pitch').value = localStorage.getItem('kc_tts_pitch') || '1';
+            document.getElementById('volume').value = localStorage.getItem('kc_tts_volume') || '1';
+            document.getElementById('segmentDelay').value = localStorage.getItem('kc_tts_segmentDelay') || '200';
+            document.getElementById('highlight').checked = localStorage.getItem('kc_tts_highlight') !== '0';
             
-            const confirmLogout = confirm('Are you sure you want to logout?');
-            if (!confirmLogout) return;
-            
-            localStorage.removeItem('kc_logged_in');
-            localStorage.removeItem('kc_user');
-            localStorage.removeItem('kc_user_data');
-            
-            window.location.href = 'login.html';
-        });
+            updateSliderValues();
+        }
 
-        // Load sample text
-        function loadSample() {
-            const sample = `Hello — welcome to the Text-to-Speech tool.\n\nThis is a dedicated interface for converting text to natural-sounding speech. You can adjust voice settings, playback speed, and use advanced features like word highlighting.\n\nUse the controls on the right to customize your experience, then press Play to hear your text.`;
-            document.getElementById('text').value = sample;
-            setStatus('Sample loaded', 'status-ok');
+        // Update slider display values
+        function updateSliderValues() {
+            document.getElementById('rateVal').textContent = document.getElementById('rate').value;
+            document.getElementById('pitchVal').textContent = document.getElementById('pitch').value;
+            document.getElementById('volumeVal').textContent = document.getElementById('volume').value;
+            document.getElementById('segmentDelayVal').textContent = document.getElementById('segmentDelay').value;
+        }
+
+        // Save settings
+        function saveSettings() {
+            localStorage.setItem('kc_tts_voice', document.getElementById('voice').value);
+            localStorage.setItem('kc_tts_rate', document.getElementById('rate').value);
+            localStorage.setItem('kc_tts_pitch', document.getElementById('pitch').value);
+            localStorage.setItem('kc_tts_volume', document.getElementById('volume').value);
+            localStorage.setItem('kc_tts_segmentDelay', document.getElementById('segmentDelay').value);
+            localStorage.setItem('kc_tts_highlight', document.getElementById('highlight').checked ? '1' : '0');
         }
 
         // Status function
-        function setStatus(message, className) {
+        function setStatus(message, className = 'bg-secondary') {
             const statusText = document.getElementById('statusText');
             statusText.textContent = message;
             statusText.className = `badge ${className}`;
         }
 
-        // Initialize
-        setTimeout(() => {
-            initUserGreeting();
+        // Create enhanced utterance with quality optimization
+        function createUtterance(text) {
+            if (!enhancedTTS) {
+                // Fallback to basic utterance if enhancement system not loaded
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = parseFloat(document.getElementById('rate').value);
+                utterance.pitch = parseFloat(document.getElementById('pitch').value);
+                utterance.volume = parseFloat(document.getElementById('volume').value);
+                return utterance;
+            }
+
+            // Get current parameters
+            const params = {
+                rate: parseFloat(document.getElementById('rate').value),
+                pitch: parseFloat(document.getElementById('pitch').value),
+                volume: parseFloat(document.getElementById('volume').value)
+            };
+
+            // Update voice selection if changed
+            const selectedVoiceURI = document.getElementById('voice').value;
+            const selectedVoiceAnalysis = voices.find(v => v.voiceURI === selectedVoiceURI);
+            
+            if (selectedVoiceAnalysis) {
+                const actualVoice = speechSynthesis.getVoices().find(v => 
+                    (v.voiceURI || v.name) === selectedVoiceURI
+                );
+                if (actualVoice) {
+                    enhancedTTS.currentVoice = actualVoice;
+                    enhancedTTS.currentVoiceAnalysis = selectedVoiceAnalysis;
+                }
+            }
+
+            // Create optimized utterance
+            const utterance = enhancedTTS.createOptimizedUtterance(text, params);
+            
+            return utterance;
+        }
+
+        // Tokenize text for highlighting
+        function tokenizeText(text) {
+            words = text.split(/(\s+)/).filter(word => word.trim().length > 0);
+            const tokenizedDiv = document.getElementById('tokenized');
+            
+            if (document.getElementById('highlight').checked) {
+                tokenizedDiv.innerHTML = words.map((word, index) => 
+                    `<span class="word" data-index="${index}">${word}</span>`
+                ).join(' ');
+                tokenizedDiv.hidden = false;
+            } else {
+                tokenizedDiv.hidden = true;
+            }
+        }
+
+        // Highlight current word
+        function highlightWord(index) {
+            if (!document.getElementById('highlight').checked) return;
+            
+            document.querySelectorAll('.word').forEach((span, i) => {
+                if (i === index) {
+                    span.classList.add('active');
+                } else {
+                    span.classList.remove('active');
+                }
+            });
+        }
+
+        // Play text
+        function playText() {
+            const text = document.getElementById('text').value.trim();
+            if (!text) {
+                setStatus('No text to read', 'bg-warning');
+                return;
+            }
+
+            if (isPaused && currentUtterance) {
+                speechSynthesis.resume();
+                isPaused = false;
+                isPlaying = true;
+                setStatus('Resumed', 'bg-success');
+                return;
+            }
+
+            stopText();
+            tokenizeText(text);
+            
+            currentUtterance = createUtterance(text);
+            currentWordIndex = 0;
+            
+            currentUtterance.onstart = () => {
+                isPlaying = true;
+                isPaused = false;
+                setStatus('Speaking', 'bg-success');
+            };
+            
+            currentUtterance.onend = () => {
+                isPlaying = false;
+                isPaused = false;
+                setStatus('Finished', 'bg-secondary');
+                highlightWord(-1); // Clear highlighting
+            };
+            
+            currentUtterance.onerror = (event) => {
+                isPlaying = false;
+                isPaused = false;
+                setStatus('Error: ' + event.error, 'bg-danger');
+            };
+            
+            // Simple word highlighting (approximate)
+            if (document.getElementById('highlight').checked) {
+                const wordCount = words.length;
+                const duration = text.length / (parseFloat(document.getElementById('rate').value) * 10); // Rough estimate
+                const wordInterval = (duration * 1000) / wordCount;
+                
+                let wordTimer = setInterval(() => {
+                    if (!isPlaying || currentWordIndex >= wordCount) {
+                        clearInterval(wordTimer);
+                        return;
+                    }
+                    highlightWord(currentWordIndex);
+                    currentWordIndex++;
+                }, wordInterval);
+            }
+            
+            speechSynthesis.speak(currentUtterance);
+            saveSettings();
+        }
+
+        // Pause text
+        function pauseText() {
+            if (isPlaying && !isPaused) {
+                speechSynthesis.pause();
+                isPaused = true;
+                isPlaying = false;
+                setStatus('Paused', 'bg-warning');
+            }
+        }
+
+        // Stop text
+        function stopText() {
+            speechSynthesis.cancel();
+            isPlaying = false;
+            isPaused = false;
+            currentUtterance = null;
+            currentWordIndex = 0;
+            setStatus('Stopped', 'bg-secondary');
+            highlightWord(-1); // Clear highlighting
+        }
+
+        // Load sample text
+        function loadSample() {
+            const sample = `Hello — welcome to the Text-to-Speech tool.\n\nThis is a dedicated interface for converting text to natural-sounding speech. You can adjust voice settings, playback speed, and use advanced features like word highlighting.\n\nUse the controls on the right to customize your experience, then press Play to hear your text.`;
+            document.getElementById('text').value = sample;
+            setStatus('Sample loaded', 'bg-info');
+        }
+
+        // Enhanced voice preview with quality test
+        function previewVoice() {
+            if (enhancedTTS) {
+                const selectedVoiceURI = document.getElementById('voice').value;
+                const actualVoice = speechSynthesis.getVoices().find(v => 
+                    (v.voiceURI || v.name) === selectedVoiceURI
+                );
+                
+                if (actualVoice) {
+                    const params = {
+                        rate: parseFloat(document.getElementById('rate').value),
+                        pitch: parseFloat(document.getElementById('pitch').value),
+                        volume: parseFloat(document.getElementById('volume').value)
+                    };
+                    
+                    const testUtterance = enhancedTTS.testVoice(actualVoice, params);
+                    speechSynthesis.speak(testUtterance);
+                    return;
+                }
+            }
+            
+            // Fallback to basic preview
+            const utterance = createUtterance('This is a preview of the selected voice with enhanced quality optimization.');
+            speechSynthesis.speak(utterance);
+        }
+
+        // File upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'text/plain') {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('text').value = e.target.result;
+                    setStatus('File loaded', 'bg-info');
+                    
+                    if (document.getElementById('fileAutoSpeak').checked) {
+                        setTimeout(playText, 500);
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                setStatus('Please select a .txt file', 'bg-warning');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('play').addEventListener('click', playText);
+        document.getElementById('pause').addEventListener('click', pauseText);
+        document.getElementById('stop').addEventListener('click', stopText);
+        document.getElementById('loadSample').addEventListener('click', loadSample);
+        document.getElementById('voicePreview').addEventListener('click', previewVoice);
+        document.getElementById('file').addEventListener('change', handleFileUpload);
+
+        // Settings event listeners
+        document.getElementById('rate').addEventListener('input', updateSliderValues);
+        document.getElementById('pitch').addEventListener('input', updateSliderValues);
+        document.getElementById('volume').addEventListener('input', updateSliderValues);
+        document.getElementById('segmentDelay').addEventListener('input', updateSliderValues);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+            
+            switch(e.key.toLowerCase()) {
+                case ' ':
+                    e.preventDefault();
+                    if (isPlaying) pauseText();
+                    else playText();
+                    break;
+                case 's':
+                    e.preventDefault();
+                    stopText();
+                    break;
+                case 'l':
+                    e.preventDefault();
+                    loadSample();
+                    break;
+            }
+        });
+
+        // Voice recommendation system
+        function updateVoiceRecommendations() {
+            if (!enhancedTTS) return;
+
+            const qualityInfo = enhancedTTS.getVoiceQualityInfo();
+            const warningDiv = document.getElementById('voiceWarning');
+            
+            if (qualityInfo.recommendations && qualityInfo.recommendations.length > 0) {
+                const recommendations = qualityInfo.recommendations.map(rec => 
+                    `<small class="text-warning">💡 ${rec.message}</small>`
+                ).join('<br>');
+                warningDiv.innerHTML = recommendations;
+            } else if (qualityInfo.currentVoice) {
+                const quality = qualityInfo.currentVoice.qualityScore;
+                if (quality >= 80) {
+                    warningDiv.innerHTML = '<small class="text-success">✅ Excellent voice quality selected</small>';
+                } else if (quality >= 60) {
+                    warningDiv.innerHTML = '<small class="text-info">ℹ️ Good voice quality</small>';
+                } else {
+                    warningDiv.innerHTML = '<small class="text-warning">⚠️ Consider selecting a higher quality voice</small>';
+                }
+            }
+        }
+
+        // Voice suggestion based on gender preference
+        function suggestVoice() {
+            if (!enhancedTTS) return;
+
+            const genderPref = document.getElementById('gender').value;
+            const requireGender = document.getElementById('requireGender').checked;
+            
+            const preferences = {
+                gender: genderPref === 'any' ? null : genderPref,
+                requireGender: requireGender
+            };
+
+            const bestVoice = enhancedTTS.voiceAnalyzer.getBestVoice(
+                voices.map(v => speechSynthesis.getVoices().find(sv => 
+                    (sv.voiceURI || sv.name) === v.voiceURI
+                )).filter(Boolean), 
+                preferences
+            );
+
+            if (bestVoice) {
+                document.getElementById('voice').value = bestVoice.voiceURI;
+                updateVoiceRecommendations();
+                
+                // Show notification
+                setStatus(`Suggested: ${bestVoice.name} (Quality: ${bestVoice.qualityScore}%)`, 'bg-info');
+            }
+        }
+
+        // Show all voices with quality info
+        function showAllVoices() {
+            const voiceList = document.getElementById('voiceList');
+            
+            if (voiceList.hidden) {
+                let voiceInfo = voices.map(voice => {
+                    const qualityBar = '█'.repeat(Math.floor(voice.qualityScore / 10));
+                    const genderIcon = voice.characteristics.gender === 'female' ? '♀' : 
+                                     voice.characteristics.gender === 'male' ? '♂' : '⚪';
+                    
+                    return `<div class="mb-1">
+                        <strong>${voice.name}</strong> ${genderIcon}<br>
+                        <small>Quality: ${voice.qualityScore}% ${qualityBar}</small><br>
+                        <small>Clarity: ${voice.clarity}% | Natural: ${voice.naturalness}% | Pronunciation: ${voice.pronunciation}%</small>
+                    </div>`;
+                }).join('');
+                
+                voiceList.innerHTML = voiceInfo;
+                voiceList.hidden = false;
+                document.getElementById('showVoices').innerHTML = '<i class="bi bi-eye-slash me-1"></i>Hide Voices';
+            } else {
+                voiceList.hidden = true;
+                document.getElementById('showVoices').innerHTML = '<i class="bi bi-list me-1"></i>Show All Voices';
+            }
+        }
+
+        // Add event listeners for new features
+        document.getElementById('suggestVoice').addEventListener('click', suggestVoice);
+        document.getElementById('showVoices').addEventListener('click', showAllVoices);
+        
+        // Update recommendations when voice changes
+        document.getElementById('voice').addEventListener('change', updateVoiceRecommendations);
+
+        // Initialize enhanced TTS system
+        setTimeout(async () => {
+            try {
+                await loadVoices();
+                loadSettings();
+                setStatus('Enhanced TTS Ready - Voice Quality Optimized', 'bg-success');
+            } catch (error) {
+                console.error('Failed to initialize enhanced TTS:', error);
+                setStatus('TTS Ready (Basic Mode)', 'bg-warning');
+            }
         }, 100);
 
-        // Add event listeners for sample button
-        document.getElementById('loadSample').addEventListener('click', loadSample);
+        // Load voices when they become available
+        speechSynthesis.onvoiceschanged = loadVoices;
 
-        // Placeholder for TTS functionality - in a real implementation, 
-        // you would include the full TTS code from kc.js here
-        console.log('TTS page loaded successfully');
+        console.log('Enhanced TTS page loaded successfully');
     </script>
 </body>
 </html>

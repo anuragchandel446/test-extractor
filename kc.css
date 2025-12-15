@@ -251,9 +251,9 @@ body {
 
 /* Professional Navigation System */
 .main-navigation {
-  background: var(--surface-elevated);
-  border-bottom: 1px solid var(--border-primary);
-  box-shadow: var(--shadow-sm);
+  background: var(--primary-600);
+  border-bottom: 1px solid var(--primary-700);
+  box-shadow: var(--shadow-md);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -274,7 +274,7 @@ body {
   align-items: center;
   gap: var(--space-3);
   text-decoration: none;
-  color: var(--text-primary);
+  color: var(--text-inverse);
 }
 
 .nav-logo {
@@ -287,7 +287,7 @@ body {
 .nav-title {
   font-size: var(--text-lg);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-inverse);
 }
 
 .nav-menu {
@@ -308,7 +308,7 @@ body {
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   border-radius: var(--radius-base);
   transition: all 0.15s ease-in-out;
@@ -317,13 +317,13 @@ body {
 }
 
 .nav-link:hover {
-  color: var(--text-primary);
-  background: var(--gray-50);
+  color: var(--text-inverse);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-link.active {
-  color: var(--primary-600);
-  background: var(--primary-50);
+  color: var(--text-inverse);
+  background: var(--primary-700);
 }
 
 .nav-link i {
@@ -349,7 +349,7 @@ body {
 .nav-toggle span {
   width: 24px;
   height: 2px;
-  background: var(--text-primary);
+  background: var(--text-inverse);
   border-radius: 1px;
   transition: all 0.3s ease;
 }
@@ -373,8 +373,8 @@ body {
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--surface-elevated);
-    border-top: 1px solid var(--border-primary);
+    background: var(--primary-600);
+    border-top: 1px solid var(--primary-700);
     box-shadow: var(--shadow-lg);
     flex-direction: column;
     gap: 0;
@@ -397,7 +397,7 @@ body {
   .nav-link {
     padding: var(--space-4);
     border-radius: 0;
-    border-bottom: 1px solid var(--border-primary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .nav-link span {

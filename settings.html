@@ -94,44 +94,31 @@
         }
     </style>
 </head>
-<body>
+<body data-page="settings">
     <!-- Enhanced cosmic visual elements -->
     <div class="cosmic-orb"></div>
     <div class="cosmic-orb"></div>
     <div class="cosmic-orb"></div>
     
-    <div class="container-fluid app">
-        <!-- Navigation Breadcrumb -->
-        <nav class="nav-breadcrumb">
-            <a href="dashboard.html"><i class="bi bi-house me-1"></i>Dashboard</a>
-            <span class="text-muted mx-2">/</span>
-            <span class="text-muted">Settings</span>
-        </nav>
+    <!-- Navigation -->
+    <nav class="main-navigation" role="navigation" aria-label="Main navigation"></nav>
+    
+    <!-- Page Content -->
+    <main class="page-content" role="main">
+        <div class="container-fluid">
+            <!-- Navigation Breadcrumb -->
+            <nav class="nav-breadcrumb">
+                <a href="dashboard.html"><i class="bi bi-house me-1"></i>Dashboard</a>
+                <span class="text-muted mx-2">/</span>
+                <span class="text-muted">Settings</span>
+            </nav>
 
-        <header class="d-flex align-items-center justify-content-between mb-4">
-            <div class="d-flex align-items-center">
-                <div class="logo me-3">
-                    <img src="./assets/moon-stoners.png" alt="Moon Stoners logo" class="img-fluid" />
-                </div>
-                <div class="brand">
-                    <h1 class="mb-1">
-                        <i class="bi bi-gear me-2" style="color: var(--galaxy-gold);"></i>
-                        Settings
-                    </h1>
-                    <p class="muted mb-0">Customize your TTS Reader experience</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="user-info text-end">
-                    <small class="text-muted">Welcome,</small>
-                    <div id="userGreeting" class="fw-semibold" style="color: var(--cosmic-cyan); font-size: 0.9rem;">
-                        Loading...
-                    </div>
-                </div>
-                <button id="logoutBtn" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-box-arrow-right me-1"></i>Logout
-                </button>
-            </div>
+        <header class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-gear"></i>
+                Settings
+            </h1>
+            <p class="page-subtitle">Customize your TTS Reader experience</p>
         </header>
 
         <div class="row g-4">
@@ -166,6 +153,35 @@
                                 Require preferred gender (strict mode)
                             </label>
                         </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label for="voiceQuality" class="form-label fw-semibold d-flex justify-content-between">
+                            <span>Minimum Voice Quality</span>
+                            <span id="voiceQualityVal" class="badge bg-secondary">60%</span>
+                        </label>
+                        <input id="voiceQuality" type="range" class="form-range" min="0" max="100" step="10" value="60" />
+                        <small class="text-muted">Only use voices above this quality threshold</small>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="form-check form-switch">
+                            <input id="autoOptimize" type="checkbox" class="form-check-input" checked />
+                            <label class="form-check-label fw-semibold" for="autoOptimize">
+                                Auto-optimize Speech Parameters
+                            </label>
+                        </div>
+                        <small class="text-muted">Automatically adjust rate, pitch, and volume for clarity</small>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="form-check form-switch">
+                            <input id="textPreprocessing" type="checkbox" class="form-check-input" checked />
+                            <label class="form-check-label fw-semibold" for="textPreprocessing">
+                                Enhanced Text Processing
+                            </label>
+                        </div>
+                        <small class="text-muted">Improve pronunciation of numbers, abbreviations, and special characters</small>
                     </div>
 
                     <div class="row g-3">
@@ -416,12 +432,17 @@
                 </small>
             </div>
         </footer>
-    </div>
+        </div>
+    </main>
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Authentication Database -->
     <script src="auth-db.js"></script>
+    <!-- Shared Navigation -->
+    <script src="shared-navigation.js"></script>
+    <!-- Voice Quality Enhancement System -->
+    <script src="voice-quality-enhancer.js"></script>
     
     <script>
         // Navigation function
@@ -437,45 +458,9 @@
             window.location.href = 'login.html';
         }
 
-        // Initialize user greeting
-        function initUserGreeting() {
-            const userGreeting = document.getElementById('userGreeting');
-            if (!userGreeting) return;
 
-            const userData = localStorage.getItem('kc_user_data');
-            
-            if (userData) {
-                try {
-                    const user = JSON.parse(userData);
-                    const displayName = user.fullName || user.username || currentUser;
-                    userGreeting.textContent = displayName;
-                    
-                    if (user.username === 'admin') {
-                        userGreeting.innerHTML = `${displayName} <span class="badge bg-danger ms-1" style="font-size: 0.7rem;">Admin</span>`;
-                    }
-                } catch (error) {
-                    userGreeting.textContent = currentUser || 'User';
-                }
-            } else {
-                userGreeting.textContent = currentUser || 'Guest';
-            }
-        }
 
-        // Logout functionality
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            
-            const confirmLogout = confirm('Are you sure you want to logout?');
-            if (!confirmLogout) return;
-            
-            localStorage.removeItem('kc_logged_in');
-            localStorage.removeItem('kc_user');
-            localStorage.removeItem('kc_user_data');
-            
-            window.location.href = 'login.html';
-        });
-
-        // Settings management
+        // Enhanced settings management with voice quality
         const LS = {
             voice: 'kc_tts_voice',
             rate: 'kc_tts_rate',
@@ -489,19 +474,45 @@
             speechLang: 'kc_speech_lang',
             bgAnimate: 'kc_tts_bgAnimate',
             bgSpeed: 'kc_tts_bgSpeed',
-            ocrLang: 'kc_ocr_lang'
+            ocrLang: 'kc_ocr_lang',
+            voiceQuality: 'kc_voice_quality',
+            autoOptimize: 'kc_auto_optimize',
+            textPreprocessing: 'kc_text_preprocessing'
         };
 
-        // Load voices
-        function loadVoices() {
-            const voices = speechSynthesis.getVoices().sort((a, b) => a.name.localeCompare(b.name));
+        let enhancedTTS = null;
+
+        // Enhanced voice loading with quality analysis
+        async function loadVoices() {
+            if (!enhancedTTS) {
+                enhancedTTS = new EnhancedTTSManager();
+                await enhancedTTS.initialize();
+            }
+
+            const qualityInfo = enhancedTTS.getVoiceQualityInfo();
+            const voices = qualityInfo.availableVoices;
+            
             const voiceSelect = document.getElementById('voice');
             voiceSelect.innerHTML = '';
             
             voices.forEach(voice => {
                 const option = document.createElement('option');
-                option.value = voice.voiceURI || voice.name;
-                option.textContent = `${voice.name} (${voice.lang || 'unknown'})`;
+                option.value = voice.voiceURI;
+                
+                // Add quality indicator to voice name
+                const qualityIcon = voice.qualityScore >= 80 ? '⭐' : 
+                                  voice.qualityScore >= 60 ? '✓' : '';
+                const genderIcon = voice.characteristics.gender === 'female' ? '♀' : 
+                                 voice.characteristics.gender === 'male' ? '♂' : '';
+                
+                option.textContent = `${qualityIcon} ${voice.name} ${genderIcon} (Quality: ${voice.qualityScore}%)`;
+                
+                // Mark recommended voices
+                if (voice.isRecommended) {
+                    option.style.fontWeight = 'bold';
+                    option.style.color = '#28a745';
+                }
+                
                 voiceSelect.appendChild(option);
             });
         }
@@ -538,6 +549,16 @@
             document.getElementById('bgAnimate').checked = bgAnimate;
             document.getElementById('bgSpeed').value = bgSpeed;
             document.getElementById('bgSpeedVal').textContent = bgSpeed + 'x';
+
+            // Voice quality settings
+            const voiceQuality = localStorage.getItem(LS.voiceQuality) || '60';
+            const autoOptimize = localStorage.getItem(LS.autoOptimize) !== '0';
+            const textPreprocessing = localStorage.getItem(LS.textPreprocessing) !== '0';
+            
+            document.getElementById('voiceQuality').value = voiceQuality;
+            document.getElementById('voiceQualityVal').textContent = voiceQuality + '%';
+            document.getElementById('autoOptimize').checked = autoOptimize;
+            document.getElementById('textPreprocessing').checked = textPreprocessing;
             
             // Language settings
             const translateTo = localStorage.getItem(LS.translateTo) || 'es';
@@ -563,12 +584,15 @@
             localStorage.setItem(LS.translateTo, document.getElementById('defaultTranslateTo').value);
             localStorage.setItem(LS.speechLang, document.getElementById('speechLang').value);
             localStorage.setItem(LS.ocrLang, document.getElementById('ocrLang').value);
+            localStorage.setItem(LS.voiceQuality, document.getElementById('voiceQuality').value);
+            localStorage.setItem(LS.autoOptimize, document.getElementById('autoOptimize').checked ? '1' : '0');
+            localStorage.setItem(LS.textPreprocessing, document.getElementById('textPreprocessing').checked ? '1' : '0');
             
             if (document.getElementById('voice').value) {
                 localStorage.setItem(LS.voice, document.getElementById('voice').value);
             }
             
-            alert('Settings saved successfully!');
+            alert('Enhanced settings saved successfully!');
         }
 
         // Reset settings
@@ -580,10 +604,31 @@
             }
         }
 
-        // Test voice
+        // Enhanced voice testing with quality optimization
         function testVoice() {
             if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance('This is a test of the selected voice.');
+                if (enhancedTTS) {
+                    // Use enhanced TTS for testing
+                    const selectedVoiceURI = document.getElementById('voice').value;
+                    const actualVoice = speechSynthesis.getVoices().find(v => 
+                        (v.voiceURI || v.name) === selectedVoiceURI
+                    );
+                    
+                    if (actualVoice) {
+                        const params = {
+                            rate: parseFloat(document.getElementById('rate').value),
+                            pitch: parseFloat(document.getElementById('pitch').value),
+                            volume: parseFloat(document.getElementById('volume').value)
+                        };
+                        
+                        const testUtterance = enhancedTTS.testVoice(actualVoice, params);
+                        speechSynthesis.speak(testUtterance);
+                        return;
+                    }
+                }
+                
+                // Fallback to basic testing
+                const utterance = new SpeechSynthesisUtterance('This is an enhanced test of voice quality and clarity optimization.');
                 const voices = speechSynthesis.getVoices();
                 const selectedVoice = voices.find(v => (v.voiceURI || v.name) === document.getElementById('voice').value);
                 
@@ -648,6 +693,10 @@
             document.getElementById('bgSpeedVal').textContent = e.target.value + 'x';
         });
 
+        document.getElementById('voiceQuality').addEventListener('input', (e) => {
+            document.getElementById('voiceQualityVal').textContent = e.target.value + '%';
+        });
+
         document.getElementById('testVoice').addEventListener('click', testVoice);
         document.getElementById('saveSettings').addEventListener('click', saveSettings);
         document.getElementById('resetSettings').addEventListener('click', resetSettings);
@@ -692,17 +741,22 @@
             });
         });
 
-        // Initialize
-        setTimeout(() => {
-            initUserGreeting();
-            loadVoices();
-            loadSettings();
+        // Initialize enhanced settings
+        setTimeout(async () => {
+            try {
+                await loadVoices();
+                loadSettings();
+                console.log('Enhanced settings initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize enhanced settings:', error);
+                loadSettings(); // Load basic settings as fallback
+            }
         }, 100);
 
         // Load voices when they become available
         speechSynthesis.onvoiceschanged = loadVoices;
 
-        console.log('Settings page loaded successfully');
+        console.log('Enhanced Settings page loaded successfully');d successfully');
     </script>
 </body>
 </html>
